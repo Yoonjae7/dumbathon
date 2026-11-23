@@ -1,14 +1,18 @@
 /* Dumb-A-Thon 2026 live tracker
    Dates come from the EPF (30 Nov to 8 Dec 2026). Tasks come from the formal proposal.
-   Every time is Malaysia time (UTC+8) so the countdown is identical for everyone, wherever they are. */
+   Every time is Malaysia time (UTC+8) so the countdown is identical for everyone, wherever they are.
+
+   The page only ever shows what applies to the CURRENT stage (see PHASES). When the clock moves
+   into the next stage, the card is swapped for that stage's tasks and info.
+   NOTE: this is a static site, so upcoming content is hidden from the page but still sits in this file.
+   It stops casual peeking, not someone who reads the source. */
 (() => {
   'use strict';
 
   /* ------------------------------------------------------------------
      ORGANISERS: edit this one line at the opening (30 Nov, 18:00).
      Leave it empty and the site just says "check WhatsApp and your email".
-     Do NOT fill it in before the opening: this is a static site, so anyone
-     could read it in "view source" even while the topic still looks locked.
+     Do NOT fill it in before the opening (anyone could read it in "view source").
      ------------------------------------------------------------------ */
   const TOPIC = '';
 
@@ -17,7 +21,7 @@
 
   const STAGES = [
     {
-      id: 'brainstorm', name: 'Brainstorm & Proposal', tag: 'Think dumb. Write confidently.',
+      id: 'brainstorm', short: 'Brainstorm', name: 'Brainstorm & Proposal', tag: 'Think dumb. Write confidently.',
       start: at('2026-11-30T18:00:00'), end: at('2026-12-02T23:59:59'),
       startLabel: 'Mon 30 Nov · 18:00', endLabel: 'Wed 2 Dec · 23:59',
       deadline: 'Proposal report due', who: 'All teams',
@@ -25,14 +29,14 @@
         'Join the <b>WhatsApp group</b>. Announcements live there.',
         'Get the <b>assignment &amp; topic</b> (sent by email and announced in the group).',
         'Form your team: <b>2 or 3 members</b>, no solo teams. Individuals get matched.',
-        'Brainstorm the <b>dumbest idea</b> that still solves a real pain point. AI tools are allowed. Laws of physics still apply.',
+        'Brainstorm the <b>dumbest idea</b> that still solves a real pain point. AI tools are allowed. F**k the laws of physics.',
         '<b>Confirm your idea</b> (Day 2, Tue 1 Dec).',
         'Write the <b>proposal report</b> (max 2 pages): startup name &amp; tagline, the pain point, the solution, the customer. <b>Do not explain the joke.</b>',
         '<b>Submit the proposal report</b> by Wed 2 Dec, 23:59.',
       ],
     },
     {
-      id: 'shortlist', name: 'Shortlist', tag: 'Refresh your email. No wait, don\'t.',
+      id: 'shortlist', short: 'Shortlist', name: 'Shortlist', tag: 'Refresh your email. No wait, don\'t.',
       start: at('2026-12-02T23:59:59'), end: at('2026-12-03T18:00:00'),
       startLabel: 'Wed 2 Dec · 23:59', endLabel: 'Thu 3 Dec · 18:00',
       deadline: 'Shortlist announced', who: 'All teams',
@@ -43,7 +47,7 @@
       ],
     },
     {
-      id: 'build', name: 'Build', tag: 'Prototype it. Ship it. Pray to Vercel.',
+      id: 'build', short: 'Build', name: 'Build', tag: 'Prototype it. Ship it. Pray to Vercel.',
       start: at('2026-12-03T18:00:00'), end: at('2026-12-07T23:59:59'),
       startLabel: 'Thu 3 Dec · 18:00', endLabel: 'Mon 7 Dec · 23:59',
       deadline: 'GitHub link, Vercel link & slides due', who: 'Shortlisted teams',
@@ -56,7 +60,7 @@
       ],
     },
     {
-      id: 'prep', name: 'Pitch Prep', tag: 'Submissions locked. Touch no code.',
+      id: 'prep', short: 'Pitch prep', name: 'Pitch Prep', tag: 'Submissions locked. Touch no code.',
       start: at('2026-12-07T23:59:59'), end: at('2026-12-08T17:00:00'),
       startLabel: 'Mon 7 Dec · 23:59', endLabel: 'Tue 8 Dec · 17:00',
       deadline: 'Doors open at F1A15', who: 'Shortlisted teams',
@@ -68,7 +72,7 @@
       ],
     },
     {
-      id: 'pitch', name: 'Pitch Night', tag: 'Say it with full confidence.',
+      id: 'pitch', short: 'Pitch night', name: 'Pitch Night', tag: 'Say it with full confidence.',
       start: at('2026-12-08T17:00:00'), end: at('2026-12-08T19:30:00'),
       startLabel: 'Tue 8 Dec · 17:00', endLabel: 'Tue 8 Dec · 19:30',
       deadline: 'Closing ceremony', who: 'Shortlisted teams',
@@ -89,16 +93,20 @@
   ];
   STAGES.forEach((s) => (s.itinerary || []).forEach((i) => { i.s = at(i.s); i.e = at(i.e); }));
 
+  const first = STAGES[0];
+  const last = STAGES[STAGES.length - 1];
+  const stageById = (id) => STAGES.find((s) => s.id === id);
+
   const CRITERIA = [
     { name: 'Creative Absurdity', w: 30, d: 'How original, funny and gloriously dumb the idea is.' },
-    { name: 'Practicality', w: 20, d: 'Does it actually solve the pain point, and could it work in real life (within the laws of physics)?' },
+    { name: 'Practicality', w: 20, d: 'Does it actually solve the pain point, and could it work in real life (physics optional)?' },
     { name: 'Product Execution', w: 25, d: 'Does the prototype work, and are the GitHub repo and Vercel link live?' },
     { name: 'Presentation', w: 25, d: 'Confidence, delivery and quality of the slides.' },
   ];
 
   const TICKER = [
     'FREE POOL RM700', 'NO SOLO TEAMS', 'DO NOT EXPLAIN THE JOKE', 'AI TOOLS ALLOWED',
-    'LAWS OF PHYSICS STILL APPLY', 'RESULTS BY EMAIL ONLY', 'BE CONFIDENTLY DUMB', 'GILBERT IS WATCHING',
+    'FXXK LAWS OF PHYSICS', 'RESULTS BY EMAIL ONLY', 'BE CONFIDENTLY DUMB', 'GILBERT IS WATCHING',
   ];
 
   const CODE_LINES = [
@@ -125,7 +133,7 @@
     ],
     calm: [
       'Plenty of time. (You will still do it in the last hour.)',
-      'Dumb ideas only. Smart ideas will be asked to leave.',
+      'Dumb ideas only. Smart ideas will be asked to leave. (Unless they are dumb but smart.)',
       'Drink water. Honk occasionally.',
       'Remember: you are not explaining the joke.',
     ],
@@ -164,40 +172,80 @@
     ],
   };
 
-  /* ---------- time handling ---------- */
-  let offset = 0; // "time machine" shifts the clock without touching the real one
-  const now = () => Date.now() + offset;
+  const $ = (id) => document.getElementById(id);
+  const pad = (n) => String(n).padStart(2, '0');
+  const plural = (n, w) => `${n} ${w}${n === 1 ? '' : 's'}`;
 
-  const qs = new URLSearchParams(location.search).get('t');
-  if (qs) {
-    const t = at(qs);
-    if (!Number.isNaN(t)) offset = t - Date.now();
+  /* ---------- storage (safe: can throw in private mode) ---------- */
+  const store = {
+    get(k) { try { return localStorage.getItem(k); } catch { return null; } },
+    set(k, v) { try { localStorage.setItem(k, v); } catch { /* ignore */ } },
+  };
+  const session = {
+    get(k) { try { return sessionStorage.getItem(k); } catch { return null; } },
+    set(k, v) { try { sessionStorage.setItem(k, v); } catch { /* ignore */ } },
+    del(k) { try { sessionStorage.removeItem(k); } catch { /* ignore */ } },
+  };
+
+  /* ------------------------------------------------------------------
+     CLOCK. `sim` is null for real time. When the dev panel (or ?t=) sets a
+     time, `sim` holds a simulated clock that can run at any speed or be paused.
+     Everything on the page reads time through now().
+     ------------------------------------------------------------------ */
+  const SIM_KEY = 'dumbathon26:sim';
+  let sim = null; // { base, real0, speed, paused }
+
+  const now = () => {
+    if (!sim) return Date.now();
+    return sim.paused ? sim.base : sim.base + (Date.now() - sim.real0) * sim.speed;
+  };
+  const saveSim = () => (sim ? session.set(SIM_KEY, JSON.stringify(sim)) : session.del(SIM_KEY));
+  function setSimTime(ms) {
+    sim = { base: ms, real0: Date.now(), speed: sim ? sim.speed : 1, paused: sim ? sim.paused : false };
+    saveSim(); refreshDev(true); tick();
+  }
+  function setSpeed(x) {
+    if (!sim) return;
+    sim.base = now(); sim.real0 = Date.now(); sim.speed = x;
+    saveSim(); tick();
+  }
+  function setPaused(p) {
+    if (!sim) sim = { base: Date.now(), real0: Date.now(), speed: 1, paused: false };
+    sim.base = now(); sim.real0 = Date.now(); sim.paused = p;
+    saveSim(); refreshDev(); tick();
+  }
+  function resetSim() {
+    sim = null; saveSim(); refreshDev(true); tick();
+    // drop a leftover ?t= so a reload doesn't jump back into the simulation
+    try {
+      const u = new URL(location.href);
+      if (u.searchParams.has('t')) { u.searchParams.delete('t'); history.replaceState(null, '', u); }
+    } catch { /* ignore */ }
   }
 
-  const pad = (n) => String(n).padStart(2, '0');
+  try {
+    const saved = session.get(SIM_KEY);
+    if (saved) sim = JSON.parse(saved);
+  } catch { sim = null; }
+  const params = new URLSearchParams(location.search);
+  if (params.get('t')) {
+    const t = at(params.get('t'));
+    if (!Number.isNaN(t)) sim = { base: t, real0: Date.now(), speed: 1, paused: false };
+  }
+
+  /* ---------- formatting ---------- */
   function parts(ms) {
     const s = Math.max(0, Math.floor(ms / 1000));
     return { d: Math.floor(s / 86400), h: Math.floor((s % 86400) / 3600), m: Math.floor((s % 3600) / 60), s: s % 60, totalH: Math.floor(s / 3600) };
   }
   const hm = (ms) => { const p = parts(ms); return `${p.totalH}h ${pad(p.m)}m`; };
   const dh = (ms) => { const p = parts(ms); return p.d ? `≈ ${p.d}d ${p.h}h` : ''; };
-  const plural = (n, w) => `${n} ${w}${n === 1 ? '' : 's'}`;
-
   const mytClock = new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Kuala_Lumpur', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
-
-  const $ = (id) => document.getElementById(id);
-  const first = STAGES[0];
-  const last = STAGES[STAGES.length - 1];
-
+  const mytFull = new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Kuala_Lumpur', weekday: 'short', day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
+  const toInputValue = (ms) => new Date(ms + 8 * 3600e3).toISOString().slice(0, 19); // MYT wall clock for <input type=datetime-local>
   const quip = (list, t) => list[Math.floor(t / 15000) % list.length];
 
-  /* ---------- storage (safe) ---------- */
-  const store = {
-    get(k) { try { return localStorage.getItem(k); } catch { return null; } },
-    set(k, v) { try { localStorage.setItem(k, v); } catch { /* private mode etc. */ } },
-  };
-
-  /* ---------- build static bits ---------- */
+  /* ---------- static bits ---------- */
   function buildBackdrop() {
     const lines = [];
     for (let i = 0; i < 60; i++) lines.push(CODE_LINES[i % CODE_LINES.length] + '   ' + CODE_LINES[(i * 5 + 3) % CODE_LINES.length]);
@@ -207,60 +255,202 @@
   }
 
   function buildCriteria() {
-    $('criteria').innerHTML = CRITERIA.map((c) => `
+    const box = $('criteria');
+    if (!box) return;
+    box.innerHTML = CRITERIA.map((c) => `
       <div class="crit-row">
         <div class="crit-top"><b>${c.name}</b><span>${c.w}%</span></div>
         <div class="crit-bar"><i data-w="${c.w * 3}"></i></div>
         <p>${c.d}</p>
       </div>`).join('');
     requestAnimationFrame(() => requestAnimationFrame(() => {
-      document.querySelectorAll('.crit-bar i').forEach((el) => { el.style.width = Math.min(100, Number(el.dataset.w)) + '%'; });
+      box.querySelectorAll('.crit-bar i').forEach((el) => { el.style.width = Math.min(100, Number(el.dataset.w)) + '%'; });
     }));
   }
 
-  function buildStages() {
-    $('stages').innerHTML = STAGES.map((s, i) => `
-      <li class="stage upcoming" id="stage-${s.id}" data-id="${s.id}">
-        <div class="stage-num" aria-hidden="true">${i + 1}</div>
-        <div class="stage-card">
-          <div class="stage-head">
-            <div class="stage-title">
-              <span class="badge locked" data-k="badge">LOCKED</span>
-              <h3>${s.name}</h3>
-              <p class="stage-tag">${s.tag}</p>
-            </div>
-            <div class="stage-time">
-              <span class="big" data-k="big">--</span>
-              <span class="lbl" data-k="lbl"></span>
-              <span class="alt" data-k="alt"></span>
-            </div>
-          </div>
-          <div class="when">
-            <span>🟢 <b>${s.startLabel}</b></span>
-            <span class="deadline">⏰ ${s.deadline}: <b>${s.endLabel}</b></span>
-            <span class="who">👥 ${s.who}</span>
-          </div>
-          <div class="bar" aria-hidden="true"><i data-k="bar"></i></div>
-          <ul class="tasks">
-            ${s.tasks.map((t, j) => `<li><label><input type="checkbox" data-key="dumbathon26:${s.id}:${j}"><span>${t}</span></label></li>`).join('')}
-          </ul>
-          ${s.itinerary ? `
-          <div class="itin">
-            <h4>Pitch night run sheet</h4>
-            <ol>
-              ${s.itinerary.map((it, j) => `<li data-it="${j}"><time>${it.t}</time><span>${it.a}${it.d ? `<small>${it.d}</small>` : ''}</span></li>`).join('')}
-            </ol>
-          </div>` : ''}
-        </div>
-      </li>`).join('');
+  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
-    document.querySelectorAll('.tasks input').forEach((cb) => {
-      cb.checked = store.get(cb.dataset.key) === '1';
-      cb.addEventListener('change', () => store.set(cb.dataset.key, cb.checked ? '1' : '0'));
+  /* ---------- what to show in each phase ----------
+     Only the current phase is ever rendered. Stage phases take their title/tasks from STAGES. */
+  const PHASES = {
+    pre: {
+      title: 'Get ready', tag: 'Brain cells: loading…',
+      tasks: [
+        'Join the <b>WhatsApp group</b>. Announcements live there.',
+        'Find your team: <b>2 or 3 members</b>, no solo teams. Friends can sign up together. Individuals get matched.',
+        'Charge your laptop and lower your standards.',
+        'The topic drops on <b>Mon 30 Nov at 18:00</b>. Not a second earlier.',
+      ],
+      panels: ['topic', 'prizes'],
+    },
+    brainstorm: { panels: ['topic', 'rule', 'proposal', 'inspo'] },
+    shortlist: { panels: ['goose'] },
+    build: { panels: ['judging'] },
+    prep: { panels: ['judging'] },
+    pitch: { panels: ['itinerary', 'judging', 'prizes'] },
+    post: { title: 'That\'s a wrap', tag: 'Brain cells: 0. Worth it.', tasks: [], panels: ['goose'] },
+  };
+
+  const PANELS = {
+    topic: (phase) => `
+      <div class="panel wide topic">
+        <img class="sticker topic-sticker" src="assets/blob-lollipop.png" alt="" width="110" height="112">
+        <div>
+          <p class="eyebrow">The assignment</p>
+          ${phase === 'pre' ? `
+            <h3>🔒 TOPIC: ████████████</h3>
+            <p>Classified. Locked. Top secret. It is sent by email and announced in the WhatsApp group the moment the clock hits zero.</p>
+            <p class="topic-count">Declassified in <b data-k="topicCd">--</b></p>` : `
+            <h3>🔓 ${TOPIC ? esc(TOPIC) : 'THE TOPIC HAS DROPPED'}</h3>
+            <p>${TOPIC ? 'Now go be gloriously dumb about it.' : 'Check your email and the WhatsApp group. Then start brainstorming your silliest startup.'}</p>`}
+        </div>
+      </div>`,
+
+    rule: () => `
+      <div class="panel wide">
+        <p class="eyebrow">The One Rule</p>
+        <p class="rule-text">Imagine you're a Nottingham student who can start <b>any startup</b> or build <b>anything</b> for campus. Come up with the <mark>funniest solution</mark> and present it with <mark>full confidence</mark>. It doesn't have to be realistic, but it has to be <b>creative</b>. <mark>F**k the laws of physics.</mark> Every idea must solve a <b>pain point</b>. AI tools are allowed.</p>
+      </div>`,
+
+    proposal: () => `
+      <div class="panel">
+        <p class="eyebrow">Proposal report <small>(max 2 pages)</small></p>
+        <ol class="list num">
+          <li>Startup name &amp; tagline</li>
+          <li>The pain point</li>
+          <li>The solution</li>
+          <li>The customer</li>
+        </ol>
+        <p class="callout">⚠️ Do <b>not</b> explain the joke. Present everything with full confidence.</p>
+      </div>`,
+
+    inspo: () => `
+      <div class="panel">
+        <details class="inspo">
+          <summary>💡 Need inspo? Example: <b>Gilbert Remote</b></summary>
+          <dl>
+            <dt>Pain point</dt><dd>Gilbert goes wherever he wants, and students have no way to control what he does.</dd>
+            <dt>The idea</dt><dd>A digital remote controller for Gilbert, our unofficial mascot goose.</dd>
+            <dt>How it works</dt><dd>Open the app, pick a button, press it. Honk. Waddle. Wave at the lake. Gilbert may or may not respond.</dd>
+            <dt>Who it helps</dt><dd>Everyone on campus. Humans and Gilbert get to interact, which creates harmony, and a harmonious campus is a prosperous university.</dd>
+            <dt>Dumber add-ons</dt><dd><b>Gilbert Premium:</b> same buttons, but Gilbert ignores you faster. <b>Honk Meter.</b> <b>Exam Week Mode:</b> Gilbert becomes your emotional support goose.</dd>
+          </dl>
+        </details>
+      </div>`,
+
+    judging: () => `
+      <div class="panel">
+        <p class="eyebrow">How you'll be judged <small>(finals)</small></p>
+        <div class="crit" id="criteria"></div>
+      </div>`,
+
+    prizes: () => `
+      <div class="panel">
+        <p class="eyebrow">Prize pool</p>
+        <div class="podium" aria-label="Prizes: 1st RM400, 2nd RM200, 3rd RM100">
+          <div class="pod p2"><span>2nd</span><b>RM200</b></div>
+          <div class="pod p1"><span>1st</span><b>RM400</b></div>
+          <div class="pod p3"><span>3rd</span><b>RM100</b></div>
+        </div>
+        <p class="total-prize">Total: <b>RM700</b>. One track, three places.</p>
+      </div>`,
+
+    itinerary: () => `
+      <div class="panel wide itin">
+        <h4>Pitch night run sheet</h4>
+        <ol>
+          ${stageById('pitch').itinerary.map((it, j) => `<li data-it="${j}"><time>${it.t}</time><span>${it.a}${it.d ? `<small>${it.d}</small>` : ''}</span></li>`).join('')}
+        </ol>
+      </div>`,
+
+    goose: () => `
+      <div class="panel">
+        <button class="goose" type="button" aria-label="Honk the goose">
+          <img src="assets/goose-poster.png" alt="A goose typing at a computer, with a lightbulb above its head" width="411" height="300">
+          <span class="goose-tag">click to HONK</span>
+        </button>
+      </div>`,
+  };
+
+  function renderNow(phase) {
+    const st = stageById(phase);
+    const P = PHASES[phase];
+    const title = st ? st.name : P.title;
+    const tag = st ? st.tag : P.tag;
+    const tasks = st ? st.tasks : P.tasks;
+    const kind = phase === 'pre' ? 'pre' : phase === 'post' ? 'post' : 'live';
+    const badge = { pre: '<span class="badge idle">GET READY</span>', post: '<span class="badge done">FINISHED</span>', live: '<span class="badge live">RIGHT NOW</span>' }[kind];
+    const when = st
+      ? `<div class="when"><span>🟢 <b>${st.startLabel}</b></span><span class="deadline">⏰ ${st.deadline}: <b>${st.endLabel}</b></span><span class="who">👥 ${st.who}</span></div>`
+      : phase === 'pre' ? `<div class="when"><span>🟢 Opens <b>${first.startLabel}</b> (MYT)</span></div>` : '';
+    const taskList = tasks.length ? `
+      <ul class="tasks">
+        ${tasks.map((t, j) => {
+          const key = `dumbathon26:${phase}:${j}`;
+          return `<li><label><input type="checkbox" data-key="${key}" ${store.get(key) === '1' ? 'checked' : ''}><span>${t}</span></label></li>`;
+        }).join('')}
+      </ul>
+      <p class="save-note">Ticks are saved in this browser only.</p>` : '';
+    const panels = P.panels.length ? `<div class="panels">${P.panels.map((k) => PANELS[k](phase)).join('')}</div>` : '';
+
+    $('nowCard').innerHTML = `
+      <article class="card now-card is-${kind}">
+        <div class="now-head">${badge}<h2>${title}</h2><p class="stage-tag">${tag}</p></div>
+        ${when}
+        ${taskList}
+        ${panels}
+        <p class="upnext" id="upNext" hidden></p>
+      </article>`;
+    if (P.panels.includes('judging')) buildCriteria();
+  }
+
+  /* ---------- timeline strip (names and dates only, no details) ---------- */
+  function buildTrack() {
+    $('track').innerHTML = STAGES.map((s, i) => `
+      <li class="trk" data-id="${s.id}">
+        <span class="n">${i + 1}</span><b>${s.short}</b><small>${s.startLabel}</small><em data-k="st"></em>
+      </li>`).join('');
+    $('nowCard').addEventListener('change', (e) => {
+      const cb = e.target;
+      if (cb.matches && cb.matches('.tasks input')) store.set(cb.dataset.key, cb.checked ? '1' : '0');
     });
   }
 
-  /* ---------- per-second updates ---------- */
+  function updateTrack(t, cur) {
+    STAGES.forEach((s, i) => {
+      const li = $('track').querySelector(`[data-id="${s.id}"]`);
+      const state = t < s.start ? 'upcoming' : t < s.end ? 'live' : 'done';
+      const isNext = state === 'upcoming' && (cur.mode === 'pre' ? i === 0 : i === cur.i + 1);
+      li.className = 'trk' + (state === 'live' ? ' live' : state === 'done' ? ' done' : isNext ? ' next' : '');
+      li.querySelector('[data-k=st]').textContent = state === 'live' ? 'LIVE' : state === 'done' ? 'DONE ✓' : isNext ? 'NEXT' : 'LOCKED';
+    });
+  }
+
+  /* things inside the "right now" card that change every tick */
+  function updateNow(t, cur) {
+    const up = $('upNext');
+    if (up) {
+      if (cur.mode === 'live') {
+        const next = STAGES[cur.i + 1];
+        up.hidden = false;
+        up.innerHTML = next
+          ? `🔜 <b>Up next: ${next.name}</b>, starts ${next.startLabel} (in <b>${hm(next.start - t)}</b>). Its tasks stay hidden until then.`
+          : '🏁 That\'s the last stage. After this: go touch grass.';
+      } else {
+        up.hidden = true;
+      }
+    }
+    const cd = document.querySelector('[data-k=topicCd]');
+    if (cd) cd.textContent = hm(first.start - t);
+    stageById('pitch').itinerary.forEach((it, j) => {
+      const li = document.querySelector(`#nowCard [data-it="${j}"]`);
+      if (!li) return;
+      li.classList.toggle('now', t >= it.s && t < it.e);
+      li.classList.toggle('past', t >= it.e);
+    });
+  }
+
+  /* ---------- per-tick updates ---------- */
   function currentStage(t) {
     if (t < first.start) return { mode: 'pre' };
     if (t >= last.end) return { mode: 'post' };
@@ -289,9 +479,7 @@
       $('heroTitle').textContent = 'Topic drops in…';
       $('heroTarget').textContent = `Opening & assignment: ${first.startLabel} (MYT)`;
       level = 'pre';
-      pct = 0;
     } else if (cur.mode === 'post') {
-      rem = 0;
       badge.textContent = 'FINISHED'; badge.className = 'badge done';
       $('heroStep').textContent = 'All stages complete';
       $('heroTitle').textContent = 'It\'s over. Go touch grass.';
@@ -317,11 +505,10 @@
     panel.classList.toggle('panic', panic);
     panel.classList.toggle('warn', level === 'urgent' || level === 'day');
     $('winTitle').textContent = panic ? 'countdown.exe (Not Responding)' : 'countdown.exe';
-    $('heroQuip').textContent = quip(QUIPS[level === 'pre' ? 'pre' : level], t);
+    $('heroQuip').textContent = quip(QUIPS[level], t);
     $('heroBar').style.width = Math.min(100, Math.max(0, pct)) + '%';
-    $('panel').querySelector('.bar').style.display = cur.mode === 'pre' ? 'none' : '';
+    panel.querySelector('.bar').style.display = cur.mode === 'pre' ? 'none' : '';
 
-    // sticky mini status + tab title
     const mini = $('miniStatus');
     mini.classList.toggle('panic', panic);
     mini.classList.toggle('idle', cur.mode !== 'live');
@@ -333,84 +520,98 @@
     document.title = `${title} | Dumb-A-Thon`;
   }
 
-  function updateBrain(t) {
-    const total = last.end - first.start;
-    const elapsed = Math.min(1, Math.max(0, (t - first.start) / total));
-    const left = Math.round((1 - elapsed) * 100);
-    $('brainPct').textContent = left + '%';
-    $('brainBar').style.width = (100 - elapsed * 100) + '%';
+  /* ---------- dev panel ---------- */
+  const PRESETS = [
+    ['Before opening (now-ish)', '2026-11-27T12:00:00'],
+    ['Topic drop −15 sec', '2026-11-30T17:59:45'],
+    ['Brainstorming', '2026-12-01T12:00:00'],
+    ['Proposal panic −30 min', '2026-12-02T23:29:00'],
+    ['Shortlist wait', '2026-12-03T09:00:00'],
+    ['Build mode', '2026-12-05T12:00:00'],
+    ['Submission panic −30 min', '2026-12-07T23:29:00'],
+    ['Pitch prep (morning)', '2026-12-08T10:00:00'],
+    ['Pitch night, live', '2026-12-08T17:40:00'],
+    ['After the event', '2026-12-08T20:00:00'],
+  ];
+  const JUMPS = [['−1d', -864e5], ['−1h', -36e5], ['−10m', -6e5], ['−1m', -6e4], ['+1m', 6e4], ['+10m', 6e5], ['+1h', 36e5], ['+1d', 864e5]];
+
+  let devOpen = false;
+  function openDev(open) {
+    devOpen = open;
+    $('devPanel').hidden = !open;
+    refreshDev(true);
+    updateBanner();
   }
-
-  function updateTopic(t) {
-    const card = $('topicCard');
-    if (t < first.start) {
-      card.classList.remove('unlocked');
-      $('topicTitle').textContent = '🔒 TOPIC: ████████████';
-      $('topicText').textContent = 'Classified. Locked. Top secret. It will be sent by email and announced in the WhatsApp group the moment the clock hits zero.';
-      $('topicCount').textContent = `Declassified in ${hm(first.start - t)}`;
-    } else {
-      card.classList.add('unlocked');
-      $('topicTitle').textContent = TOPIC ? `🔓 ${TOPIC}` : '🔓 THE TOPIC HAS DROPPED';
-      $('topicText').textContent = TOPIC
-        ? 'Now go be gloriously dumb about it.'
-        : 'Check your email and the WhatsApp group. Then start brainstorming your silliest startup.';
-      $('topicCount').textContent = '';
-    }
+  function updateBanner() {
+    $('simBanner').hidden = !sim || devOpen;
   }
+  function refreshDev(syncInput) {
+    $('devMode').textContent = !sim ? 'REAL TIME' : sim.paused ? 'SIMULATED · PAUSED' : sim.speed > 1 ? `SIMULATED · ${sim.speed}× SPEED` : 'SIMULATED';
+    $('devMode').className = sim ? 'sim' : '';
+    $('devPlay').textContent = sim && sim.paused ? '▶ Play' : '⏸ Pause';
+    $('devSpeed').value = String(sim ? sim.speed : 1);
+    if (syncInput) $('devInput').value = toInputValue(now());
+    updateBanner();
+  }
+  function stepStage(dir) {
+    const t = now();
+    const marks = [...new Set([first.start, ...STAGES.map((s) => s.end), ...STAGES.map((s) => s.start)])].sort((a, b) => a - b);
+    const target = dir > 0 ? marks.find((m) => m > t + 500) : [...marks].reverse().find((m) => m < t - 2000);
+    if (target) setSimTime(target);
+  }
+  function wireDev() {
+    $('devJumps').innerHTML = JUMPS.map(([l, ms]) => `<button type="button" class="dbtn" data-ms="${ms}">${l}</button>`).join('');
+    $('devPresets').innerHTML = PRESETS.map(([l, iso]) => `<button type="button" class="dbtn" data-iso="${iso}">${l}</button>`).join('');
 
-  function updateStages(t) {
-    const cur = currentStage(t);
-    STAGES.forEach((s, i) => {
-      const el = $('stage-' + s.id);
-      const state = t < s.start ? 'upcoming' : t < s.end ? 'live' : 'done';
-      const isNext = state === 'upcoming' && (cur.mode === 'pre' ? i === 0 : i === cur.i + 1);
-      const rem = s.end - t;
-      const panic = state === 'live' && (s.id === 'brainstorm' || s.id === 'build') && rem < 3600e3;
-
-      el.classList.toggle('live', state === 'live');
-      el.classList.toggle('done', state === 'done');
-      el.classList.toggle('upcoming', state === 'upcoming');
-      el.classList.toggle('next', isNext);
-      el.classList.toggle('panic', panic);
-
-      const badge = el.querySelector('[data-k=badge]');
-      const big = el.querySelector('[data-k=big]');
-      const lbl = el.querySelector('[data-k=lbl]');
-      const alt = el.querySelector('[data-k=alt]');
-      const bar = el.querySelector('[data-k=bar]');
-
-      if (state === 'live') {
-        badge.className = 'badge live'; badge.textContent = 'LIVE NOW';
-        big.textContent = hm(rem); lbl.textContent = 'left'; alt.textContent = dh(rem);
-        bar.style.width = ((t - s.start) / (s.end - s.start)) * 100 + '%';
-      } else if (state === 'done') {
-        badge.className = 'badge done'; badge.textContent = 'DONE ✓';
-        big.textContent = 'Done'; lbl.textContent = `ended ${s.endLabel}`; alt.textContent = '';
-      } else {
-        badge.className = 'badge ' + (isNext ? 'next' : 'locked');
-        badge.textContent = isNext ? 'UP NEXT' : 'LOCKED 🔒';
-        big.textContent = hm(s.start - t); lbl.textContent = 'until it starts'; alt.textContent = dh(s.start - t);
-      }
-
-      (s.itinerary || []).forEach((it, j) => {
-        const li = el.querySelector(`[data-it="${j}"]`);
-        li.classList.toggle('now', t >= it.s && t < it.e);
-        li.classList.toggle('past', t >= it.e);
-      });
+    $('devJumps').addEventListener('click', (e) => { const b = e.target.closest('[data-ms]'); if (b) setSimTime(now() + Number(b.dataset.ms)); });
+    $('devPresets').addEventListener('click', (e) => { const b = e.target.closest('[data-iso]'); if (b) setSimTime(at(b.dataset.iso)); });
+    $('devSet').addEventListener('click', () => { const v = $('devInput').value; if (v) { const ms = at(v); if (!Number.isNaN(ms)) setSimTime(ms); } });
+    $('devInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') $('devSet').click(); });
+    $('devPrev').addEventListener('click', () => stepStage(-1));
+    $('devNext').addEventListener('click', () => stepStage(1));
+    $('devSpeed').addEventListener('change', (e) => {
+      if (!sim) sim = { base: Date.now(), real0: Date.now(), speed: 1, paused: false };
+      setSpeed(Number(e.target.value)); refreshDev();
     });
+    $('devPlay').addEventListener('click', () => setPaused(!(sim && sim.paused)));
+    $('devReset').addEventListener('click', resetSim);
+    $('devClose').addEventListener('click', () => openDev(false));
+    $('simBannerDev').addEventListener('click', () => openDev(true));
+    $('simBannerReset').addEventListener('click', resetSim);
+
+    document.addEventListener('keydown', (e) => {
+      if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'd') { e.preventDefault(); openDev(!devOpen); }
+    });
+    if (params.has('dev')) openDev(true);
+    refreshDev(true);
   }
 
+  /* ---------- main loop ---------- */
+  let timer = 0;
+  let shownPhase = null;
   function tick() {
+    clearTimeout(timer);
     const t = now();
     const cur = currentStage(t);
+    const phase = cur.mode === 'live' ? cur.stage.id : cur.mode;
     $('clock').textContent = mytClock.format(new Date(t));
     updateHero(t, cur);
-    updateBrain(t);
-    updateTopic(t);
-    updateStages(t);
+    updateTrack(t, cur);
+    if (phase !== shownPhase) { shownPhase = phase; renderNow(phase); }
+    updateNow(t, cur);
+    if (sim) {
+      $('simBannerTime').textContent = mytFull.format(new Date(t));
+      if (devOpen) $('devNow').textContent = mytFull.format(new Date(t));
+    } else if (devOpen) {
+      $('devNow').textContent = mytFull.format(new Date(t));
+    }
+    // fast clock needs faster redraws; real time ticks on the second boundary
+    const fast = sim && !sim.paused && sim.speed > 1;
+    const delay = fast ? 150 : sim && sim.paused ? 500 : 1000 - (Date.now() % 1000) + 5;
+    timer = setTimeout(tick, delay);
   }
 
-  /* ---------- fun stuff ---------- */
+  /* ---------- honk ---------- */
   let honks = 0;
   function honk(x, y) {
     honks++;
@@ -442,32 +643,22 @@
     setTimeout(() => pop.remove(), 950);
   }
 
-  function wireUp() {
-    const clickPos = (e) => {
+  function wireHonk() {
+    $('honkBtn').addEventListener('click', (e) => {
       const r = e.currentTarget.getBoundingClientRect();
-      return e.clientX ? [e.clientX, e.clientY] : [r.left + r.width / 2, r.top];
-    };
-    $('gooseBtn').addEventListener('click', (e) => honk(...clickPos(e)));
-    $('honkBtn').addEventListener('click', (e) => honk(...clickPos(e)));
-
-    const tm = $('timeMachine');
-    if (qs) {
-      // keep the dropdown in sync when a ?t= link was used
-      const opt = [...tm.options].find((o) => o.value && o.value.startsWith(qs));
-      if (opt) tm.value = opt.value;
-    }
-    tm.addEventListener('change', () => {
-      offset = tm.value ? at(tm.value) - Date.now() : 0;
-      tick();
+      honk(e.clientX || r.left + r.width / 2, e.clientY || r.top);
+    });
+    // the goose lives inside the "right now" card, which gets re-rendered, so listen on the document
+    document.addEventListener('click', (e) => {
+      if (e.target.closest && e.target.closest('.goose')) honk(e.clientX, e.clientY);
     });
   }
 
   buildBackdrop();
-  buildCriteria();
-  buildStages();
-  wireUp();
+  buildTrack();
+  wireHonk();
+  wireDev();
   tick();
-  setInterval(tick, 1000);
   // sections are built by JS, so honour a #hash (e.g. #stage-build) once they exist
   if (location.hash.length > 1) {
     const target = document.getElementById(decodeURIComponent(location.hash.slice(1)));
