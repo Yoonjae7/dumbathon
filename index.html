@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dumb-A-Thon 2026 | Live Tracker</title>
+<meta name="description" content="The official Dumb-A-Thon 2026 tracker: live countdowns, deadlines and tasks for every stage. 30 Nov to 8 Dec 2026. RM700 prize pool.">
+<meta name="theme-color" content="#121215">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%AA%BF%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="code-bg" id="codeBg" aria-hidden="true"></div>
+
+<div class="ticker" aria-hidden="true"><div class="ticker-track" id="tickerTrack"></div></div>
+
+<header class="topbar">
+  <div class="wrap">
+    <a class="brand" href="#top">Dumb<b>-A-</b>Thon</a>
+    <div class="mini-status" id="miniStatus" aria-live="off">
+      <span class="dot"></span>
+      <span class="mini-text" id="miniText">Loading brain cells…</span>
+    </div>
+    <nav class="nav" aria-label="Sections">
+      <a href="#tracker">Stages</a>
+      <a href="#topic">Topic</a>
+      <a href="#rules">Rules</a>
+      <a href="#prizes">Prizes</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- HERO -->
+  <section class="wrap hero">
+    <div class="hero-copy">
+      <div class="logo-crop" role="img" aria-label="Dumb-A-Thon logo"></div>
+      <p class="tagline">A judgment-free hackathon where the <mark>dumber</mark> the idea, the better. Build your silliest startup. Pitch it with <mark>full confidence</mark>.</p>
+      <ul class="chips">
+        <li>📅 30 Nov → 8 Dec 2026</li>
+        <li>👥 Teams of 2–3, no solo</li>
+        <li>💸 RM700 prize pool</li>
+        <li>🤖 AI tools allowed</li>
+      </ul>
+      <p class="tz">All times are Malaysia time (MYT, UTC+8). Right now it's <b id="clock">--:--:--</b> in Malaysia.</p>
+    </div>
+
+    <div class="hero-panel">
+      <img class="sticker hero-sticker" src="assets/blob-grin.png" alt="" width="96" height="95">
+      <div class="win" id="panel" role="timer" aria-label="Countdown to the next deadline">
+        <div class="win-bar"><i></i><i></i><i></i><span id="winTitle">countdown.exe</span></div>
+        <div class="win-body">
+          <div class="panel-top">
+            <span class="badge live" id="heroBadge">LIVE NOW</span>
+            <span class="panel-step" id="heroStep">Stage 1 of 5</span>
+          </div>
+          <h2 class="panel-title" id="heroTitle">Brainstorm &amp; Proposal</h2>
+          <p class="panel-target" id="heroTarget">Proposal report due Wed 2 Dec · 23:59</p>
+
+          <div class="digits">
+            <div class="digit"><b id="dD">00</b><span>days</span></div>
+            <div class="digit"><b id="dH">00</b><span>hours</span></div>
+            <div class="digit"><b id="dM">00</b><span>mins</span></div>
+            <div class="digit"><b id="dS">00</b><span>secs</span></div>
+          </div>
+          <p class="total" id="heroTotal">= 0 hours 0 minutes left</p>
+
+          <div class="bar" aria-hidden="true"><i id="heroBar"></i></div>
+          <p class="quip" id="heroQuip">…</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BRAIN CELLS -->
+  <section class="wrap brain" aria-label="Overall event progress">
+    <div class="brain-head">
+      <h2>🧠 Brain cells remaining</h2>
+      <b id="brainPct">100%</b>
+    </div>
+    <div class="bar big" aria-hidden="true"><i id="brainBar"></i></div>
+    <div class="brain-scale" aria-hidden="true">
+      <span>30 Nov<br>18:00</span><span>2 Dec</span><span>3 Dec</span><span>7 Dec</span><span>8 Dec<br>19:30</span>
+    </div>
+  </section>
+
+  <!-- TOPIC -->
+  <section class="wrap" id="topic">
+    <div class="card topic" id="topicCard">
+      <img class="sticker topic-sticker" src="assets/blob-lollipop.png" alt="" width="110" height="112">
+      <div class="topic-body">
+        <p class="eyebrow">The assignment</p>
+        <h2 id="topicTitle">🔒 TOPIC: ████████████</h2>
+        <p id="topicText">Classified. Locked. Top secret. Even we don't want to know.</p>
+        <p class="topic-count" id="topicCount"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- STAGES -->
+  <section class="wrap" id="tracker">
+    <div class="sec-head">
+      <h2>The Stages</h2>
+      <p>Every stage, every deadline, every task. Tick things off as you go. They save in <i>your</i> browser only, so your team's progress is between you and your conscience.</p>
+    </div>
+    <ol class="stages" id="stages"></ol>
+  </section>
+
+  <!-- RULES / INFO -->
+  <section class="wrap" id="rules">
+    <div class="sec-head">
+      <h2>The Fine Print<br><small>(it's mostly vibes)</small></h2>
+    </div>
+
+    <div class="grid">
+      <article class="card span-12 rule">
+        <p class="eyebrow">The One Rule</p>
+        <p class="rule-text">Imagine you're a Nottingham student who can start <b>any startup</b> or build <b>anything</b> for campus. Come up with the <mark>funniest solution</mark> and present it with <mark>full confidence</mark>. It doesn't have to be realistic, but it has to be <b>creative</b> and follow the <b>laws of physics</b>. Every idea must solve a <b>pain point</b>. AI tools are allowed.</p>
+      </article>
+
+      <article class="card span-6">
+        <p class="eyebrow">Teams</p>
+        <ul class="list">
+          <li><b>2 or 3 members</b> per team. No solo teams.</li>
+          <li>Friends can sign up together. Individuals get matched into teams.</li>
+          <li>Up to <b>75 participants</b> in total.</li>
+          <li>Hybrid: <b>online</b> for the brainstorm, proposal and build, then a <b>live pitch night</b> on campus.</li>
+          <li>Join the WhatsApp group for announcements. <b>Results come by email only.</b></li>
+        </ul>
+      </article>
+
+      <article class="card span-6">
+        <p class="eyebrow">Proposal report <small>(max 2 pages)</small></p>
+        <ol class="list num">
+          <li>Startup name &amp; tagline</li>
+          <li>The pain point</li>
+          <li>The solution</li>
+          <li>The customer</li>
+        </ol>
+        <p class="callout">⚠️ Do <b>not</b> explain the joke. Present everything with full confidence.</p>
+      </article>
+
+      <article class="card span-7" id="judging">
+        <p class="eyebrow">How you'll be judged <small>(finals only)</small></p>
+        <div class="crit" id="criteria"></div>
+        <p class="muted small">The proposal report isn't scored with this table. It decides the shortlist.</p>
+      </article>
+
+      <article class="card span-5" id="prizes">
+        <p class="eyebrow">Prize pool</p>
+        <div class="podium" aria-label="Prizes: 1st RM400, 2nd RM200, 3rd RM100">
+          <div class="pod p2"><span>2nd</span><b>RM200</b></div>
+          <div class="pod p1"><span>1st</span><b>RM400</b></div>
+          <div class="pod p3"><span>3rd</span><b>RM100</b></div>
+        </div>
+        <p class="total-prize">Total: <b>RM700</b>. One track, three places.</p>
+        <button class="goose" id="gooseBtn" type="button" aria-label="Honk the goose">
+          <img src="assets/goose-poster.png" alt="A goose typing at a computer, with a lightbulb above its head" width="411" height="300">
+          <span class="goose-tag">click to HONK</span>
+        </button>
+      </article>
+
+      <article class="card span-12">
+        <details class="inspo">
+          <summary>💡 Need inspo? Example idea: <b>Gilbert Remote</b></summary>
+          <dl>
+            <dt>The pain point</dt><dd>Gilbert goes wherever he wants, and students have no way to interact with him or control what he does.</dd>
+            <dt>The idea</dt><dd>A digital remote controller for Gilbert, our unofficial mascot goose.</dd>
+            <dt>How it works</dt><dd>Open the app, pick a button, press it. Honk. Waddle. Wave at the lake. Gilbert may or may not respond.</dd>
+            <dt>Who it helps</dt><dd>Everyone on campus. You can finally interact with Gilbert from anywhere, even during lectures. Humans and Gilbert get to interact, which creates harmony, and a harmonious campus is a prosperous university.</dd>
+            <dt>Dumber add-ons</dt><dd><b>Gilbert Premium:</b> same buttons, but Gilbert ignores you faster. <b>Honk Meter:</b> shows how loud Gilbert is right now. <b>Exam Week Mode:</b> Gilbert becomes your emotional support goose.</dd>
+          </dl>
+        </details>
+      </article>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <div class="partners" role="img" aria-label="University of Nottingham Malaysia, Engineers Without Borders, Computer Science Society, Institution of Engineers Malaysia, Students' Association"></div>
+    <p class="foot-line">Hosted by the Computer Science Society, Engineers Without Borders and the Institution of Engineers, Malaysia · University of Nottingham Malaysia</p>
+    <div class="foot-tools">
+      <button class="btn" id="honkBtn" type="button">🪿 HONK <span id="honkCount">0</span></button>
+      <label class="tm">
+        <span>🕰️ Time machine</span>
+        <select id="timeMachine" aria-label="Preview the site at a different time">
+          <option value="">Real time (now)</option>
+          <option value="2026-11-30T17:59:45">Opening, 15 sec before topic drop</option>
+          <option value="2026-12-01T12:00:00">Brainstorming (Tue 1 Dec)</option>
+          <option value="2026-12-02T23:00:00">Proposal panic (Wed 2 Dec, 23:00)</option>
+          <option value="2026-12-03T09:00:00">Shortlist wait (Thu 3 Dec)</option>
+          <option value="2026-12-05T12:00:00">Build mode (Sat 5 Dec)</option>
+          <option value="2026-12-07T23:30:00">Submission panic (Mon 7 Dec, 23:30)</option>
+          <option value="2026-12-08T10:00:00">Pitch prep (Tue 8 Dec, morning)</option>
+          <option value="2026-12-08T17:40:00">Pitch night, live (Tue 8 Dec, 17:40)</option>
+          <option value="2026-12-08T20:00:00">After the event</option>
+        </select>
+      </label>
+    </div>
+    <p class="muted small">Schedule is tentative and may change. Organisers will confirm updates in the WhatsApp group.</p>
+  </div>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>

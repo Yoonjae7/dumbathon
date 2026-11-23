@@ -1,0 +1,3 @@
+# Confidential source documents (proposal/EPF contain private details)
+*.pdf
+.claude/
