@@ -58,7 +58,7 @@
 
           <div class="digits">
             <div class="digit"><b id="dD">00</b><span>days</span></div>
-            <div class="digit"><b id="dH">00</b><span>hours</span></div>
+            <div class="digit"><b id="dH">00</b><span>hrs</span></div>
             <div class="digit"><b id="dM">00</b><span>mins</span></div>
             <div class="digit"><b id="dS">00</b><span>secs</span></div>
           </div>
@@ -100,51 +100,43 @@
   <button type="button" class="dbtn" id="simBannerReset">Back to real time</button>
 </div>
 
+<!-- 10-second topic drop countdown: full-screen, click to skip -->
+<div class="drop" id="drop" hidden data-mode="count" role="alert" aria-live="assertive">
+  <div class="drop-inner">
+    <p class="drop-label" id="dropLabel">TOPIC DROPS IN</p>
+    <div class="drop-num" id="dropNum">10</div>
+    <p class="drop-quip" id="dropQuip"></p>
+  </div>
+  <div class="confetti" id="confetti" aria-hidden="true"></div>
+  <p class="drop-skip">click anywhere to skip</p>
+</div>
+
 <!-- DEV PANEL: open with ?dev in the address, or Ctrl+Shift+D -->
 <aside class="dev" id="devPanel" hidden aria-label="Developer time simulator">
   <div class="dev-bar">
-    <b>🛠 DEV PANEL</b><span>time simulator</span>
+    <b>🛠 DEV</b><span id="devMode">REAL TIME</span>
     <button type="button" id="devClose" aria-label="Close dev panel">✕</button>
   </div>
   <div class="dev-body">
-    <div class="dev-now">
-      <small id="devMode">REAL TIME</small>
-      <b id="devNow">--</b>
-      <small>Malaysia time (MYT). The whole site follows this clock.</small>
-    </div>
-
-    <div class="dev-label">Set an exact time</div>
+    <div class="dev-now" id="devNow">--</div>
+    <select id="devPresets" aria-label="Jump to a time"></select>
     <div class="dev-row">
       <input type="datetime-local" id="devInput" step="1" aria-label="Simulated date and time (MYT)">
       <button type="button" class="dbtn go" id="devSet">Set</button>
     </div>
-
-    <div class="dev-label">Nudge</div>
-    <div class="dev-grid" id="devJumps"></div>
-
-    <div class="dev-label">Stages</div>
     <div class="dev-row">
-      <button type="button" class="dbtn" id="devPrev">⏮ Prev stage</button>
-      <button type="button" class="dbtn" id="devNext">Next stage ⏭</button>
-    </div>
-
-    <div class="dev-label">Presets</div>
-    <div class="dev-grid wide" id="devPresets"></div>
-
-    <div class="dev-label">Clock speed</div>
-    <div class="dev-row">
+      <button type="button" class="dbtn" id="devPrev" title="Previous stage" aria-label="Previous stage">⏮</button>
+      <button type="button" class="dbtn" id="devPlay" title="Pause / play" aria-label="Pause or play">⏸</button>
+      <button type="button" class="dbtn" id="devNext" title="Next stage" aria-label="Next stage">⏭</button>
       <select id="devSpeed" aria-label="Clock speed">
-        <option value="1">1× (real speed)</option>
+        <option value="1">1×</option>
         <option value="10">10×</option>
-        <option value="60">60× (1 min / sec)</option>
-        <option value="600">600× (10 min / sec)</option>
-        <option value="3600">3600× (1 hr / sec)</option>
+        <option value="60">60×</option>
+        <option value="600">600×</option>
+        <option value="3600">3600×</option>
       </select>
-      <button type="button" class="dbtn" id="devPlay">⏸ Pause</button>
     </div>
-
-    <button type="button" class="dbtn reset" id="devReset">↺ Back to real time</button>
-    <p class="dev-note">This only changes your own browser tab. Nothing is saved on a server.</p>
+    <button type="button" class="dbtn reset" id="devReset">↺ Real time</button>
   </div>
 </aside>
 

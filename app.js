@@ -238,8 +238,7 @@
     const s = Math.max(0, Math.floor(ms / 1000));
     return { d: Math.floor(s / 86400), h: Math.floor((s % 86400) / 3600), m: Math.floor((s % 3600) / 60), s: s % 60, totalH: Math.floor(s / 3600) };
   }
-  const hm = (ms) => { const p = parts(ms); return `${p.totalH}h ${pad(p.m)}m`; };
-  const dh = (ms) => { const p = parts(ms); return p.d ? `≈ ${p.d}d ${p.h}h` : ''; };
+  const hms = (ms) => { const p = parts(ms); return `${p.totalH}h ${pad(p.m)}m ${pad(p.s)}s`; };
   const mytClock = new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Kuala_Lumpur', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
   const mytFull = new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Kuala_Lumpur', weekday: 'short', day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
   const toInputValue = (ms) => new Date(ms + 8 * 3600e3).toISOString().slice(0, 19); // MYT wall clock for <input type=datetime-local>
@@ -434,14 +433,14 @@
         const next = STAGES[cur.i + 1];
         up.hidden = false;
         up.innerHTML = next
-          ? `🔜 <b>Up next: ${next.name}</b>, starts ${next.startLabel} (in <b>${hm(next.start - t)}</b>). Its tasks stay hidden until then.`
+          ? `🔜 <b>Up next: ${next.name}</b>, starts ${next.startLabel} (in <b>${hms(next.start - t)}</b>). Its tasks stay hidden until then.`
           : '🏁 That\'s the last stage. After this: go touch grass.';
       } else {
         up.hidden = true;
       }
     }
     const cd = document.querySelector('[data-k=topicCd]');
-    if (cd) cd.textContent = hm(first.start - t);
+    if (cd) cd.textContent = hms(first.start - t);
     stageById('pitch').itinerary.forEach((it, j) => {
       const li = document.querySelector(`#nowCard [data-it="${j}"]`);
       if (!li) return;
@@ -464,7 +463,7 @@
     $('dH').textContent = pad(p.h);
     $('dM').textContent = pad(p.m);
     $('dS').textContent = pad(p.s);
-    $('heroTotal').textContent = `= ${plural(p.totalH, 'hour')} ${plural(p.m, 'minute')} left`;
+    $('heroTotal').textContent = `= ${plural(p.totalH, 'hour')} ${plural(p.m, 'minute')} ${plural(p.s, 'second')} left`;
   }
 
   function updateHero(t, cur) {
@@ -513,17 +512,98 @@
     mini.classList.toggle('panic', panic);
     mini.classList.toggle('idle', cur.mode !== 'live');
     let miniText, title;
-    if (cur.mode === 'pre') { miniText = `Topic drops in ${hm(rem)}`; title = `⏳ ${hm(rem)} to topic drop`; }
+    if (cur.mode === 'pre') { miniText = `Topic drops in ${hms(rem)}`; title = `⏳ ${hms(rem)} to topic drop`; }
     else if (cur.mode === 'post') { miniText = 'Dumb-A-Thon 2026 is over. Go touch grass.'; title = 'Dumb-A-Thon 2026'; }
-    else { miniText = `${cur.stage.name}: ${hm(rem)} left`; title = `${panic ? '🚨' : '⏳'} ${hm(rem)} · ${cur.stage.name}`; }
+    else { miniText = `${cur.stage.name}: ${hms(rem)} left`; title = `${panic ? '🚨' : '⏳'} ${hms(rem)} · ${cur.stage.name}`; }
     $('miniText').textContent = miniText;
     document.title = `${title} | Dumb-A-Thon`;
+  }
+
+  /* ---------- the 10-second topic drop countdown (full-screen) ---------- */
+  const DROP_QUIPS = {
+    10: 'Hands off the keyboard.', 9: 'Stretch your fingers.', 8: 'Drink some water.', 7: 'Hide your plans from the other teams.',
+    6: 'Gilbert is watching.', 5: 'Lower your standards.', 4: 'Find your team. Fast.', 3: 'Brain cells: ready.', 2: 'Be confident.', 1: 'HONK.',
+  };
+  const CONFETTI = ['#ff8fdc', '#3ee6c8', '#ffd25e', '#7a4dff', '#ff9b3d', '#fbf8ff'];
+  let prevT = null, lastDropN = 0, dropDismissed = false, burstUntil = 0;
+
+  function beep(freq, dur = 0.09) {
+    try {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      honk.ac = honk.ac || new AC();
+      const ac = honk.ac;
+      if (ac.state === 'suspended') ac.resume().catch(() => {});
+      const o = ac.createOscillator(), g = ac.createGain(), t0 = ac.currentTime;
+      o.type = 'square'; o.frequency.value = freq;
+      g.gain.setValueAtTime(0.0001, t0);
+      g.gain.exponentialRampToValueAtTime(0.12, t0 + 0.01);
+      g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+      o.connect(g); g.connect(ac.destination);
+      o.start(t0); o.stop(t0 + dur + 0.02);
+    } catch { /* audio blocked until the visitor interacts: the visuals still run */ }
+  }
+
+  function spawnConfetti() {
+    const box = $('confetti');
+    box.innerHTML = '';
+    for (let i = 0; i < 70; i++) {
+      const c = document.createElement('i');
+      c.style.left = Math.random() * 100 + '%';
+      c.style.background = CONFETTI[i % CONFETTI.length];
+      c.style.animationDuration = 1.6 + Math.random() * 1.8 + 's';
+      c.style.animationDelay = Math.random() * 0.5 + 's';
+      c.style.width = c.style.height = 8 + Math.random() * 10 + 'px';
+      box.appendChild(c);
+    }
+  }
+
+  function updateDrop(t) {
+    const el = $('drop');
+    const toDrop = first.start - t;
+    // crossing zero by itself (a normal tick), not a jump from the dev panel
+    const crossed = prevT !== null && prevT < first.start && t >= first.start && t - prevT < 5000;
+    prevT = t;
+    if (toDrop > 10500) dropDismissed = false;
+
+    if (crossed && !dropDismissed) {
+      burstUntil = Date.now() + 3600;
+      lastDropN = 0;
+      el.dataset.mode = 'burst';
+      el.classList.remove('final');
+      $('dropLabel').textContent = 'TOPIC';
+      $('dropNum').textContent = 'DROPPED!';
+      $('dropQuip').textContent = 'Go go go. Be gloriously dumb.';
+      $('dropNum').classList.remove('pop'); void $('dropNum').offsetWidth; $('dropNum').classList.add('pop');
+      spawnConfetti();
+      beep(660, 0.12); setTimeout(() => beep(880, 0.12), 120); setTimeout(() => beep(1320, 0.25), 240);
+      el.hidden = false;
+      return;
+    }
+    if (Date.now() < burstUntil && !dropDismissed) return; // let the burst play out
+
+    if (toDrop > 0 && toDrop <= 10000 && !dropDismissed) {
+      const n = Math.ceil(toDrop / 1000);
+      el.dataset.mode = 'count';
+      if (n !== lastDropN) {
+        lastDropN = n;
+        $('dropLabel').textContent = 'TOPIC DROPS IN';
+        $('dropNum').textContent = n;
+        $('dropQuip').textContent = DROP_QUIPS[n];
+        el.classList.toggle('final', n <= 3);
+        $('dropNum').classList.remove('pop'); void $('dropNum').offsetWidth; $('dropNum').classList.add('pop');
+        beep(n <= 3 ? 880 : 520);
+      }
+      el.hidden = false;
+    } else {
+      el.hidden = true;
+      lastDropN = 0;
+    }
   }
 
   /* ---------- dev panel ---------- */
   const PRESETS = [
     ['Before opening (now-ish)', '2026-11-27T12:00:00'],
-    ['Topic drop −15 sec', '2026-11-30T17:59:45'],
+    ['Topic drop (12 sec before)', '2026-11-30T17:59:48'],
     ['Brainstorming', '2026-12-01T12:00:00'],
     ['Proposal panic −30 min', '2026-12-02T23:29:00'],
     ['Shortlist wait', '2026-12-03T09:00:00'],
@@ -533,7 +613,6 @@
     ['Pitch night, live', '2026-12-08T17:40:00'],
     ['After the event', '2026-12-08T20:00:00'],
   ];
-  const JUMPS = [['−1d', -864e5], ['−1h', -36e5], ['−10m', -6e5], ['−1m', -6e4], ['+1m', 6e4], ['+10m', 6e5], ['+1h', 36e5], ['+1d', 864e5]];
 
   let devOpen = false;
   function openDev(open) {
@@ -546,9 +625,9 @@
     $('simBanner').hidden = !sim || devOpen;
   }
   function refreshDev(syncInput) {
-    $('devMode').textContent = !sim ? 'REAL TIME' : sim.paused ? 'SIMULATED · PAUSED' : sim.speed > 1 ? `SIMULATED · ${sim.speed}× SPEED` : 'SIMULATED';
+    $('devMode').textContent = !sim ? 'REAL TIME' : sim.paused ? 'SIM · PAUSED' : sim.speed > 1 ? `SIM · ${sim.speed}×` : 'SIMULATED';
     $('devMode').className = sim ? 'sim' : '';
-    $('devPlay').textContent = sim && sim.paused ? '▶ Play' : '⏸ Pause';
+    $('devPlay').textContent = sim && sim.paused ? '▶' : '⏸';
     $('devSpeed').value = String(sim ? sim.speed : 1);
     if (syncInput) $('devInput').value = toInputValue(now());
     updateBanner();
@@ -560,11 +639,8 @@
     if (target) setSimTime(target);
   }
   function wireDev() {
-    $('devJumps').innerHTML = JUMPS.map(([l, ms]) => `<button type="button" class="dbtn" data-ms="${ms}">${l}</button>`).join('');
-    $('devPresets').innerHTML = PRESETS.map(([l, iso]) => `<button type="button" class="dbtn" data-iso="${iso}">${l}</button>`).join('');
-
-    $('devJumps').addEventListener('click', (e) => { const b = e.target.closest('[data-ms]'); if (b) setSimTime(now() + Number(b.dataset.ms)); });
-    $('devPresets').addEventListener('click', (e) => { const b = e.target.closest('[data-iso]'); if (b) setSimTime(at(b.dataset.iso)); });
+    $('devPresets').innerHTML = '<option value="">Jump to…</option>' + PRESETS.map(([l, iso]) => `<option value="${iso}">${l}</option>`).join('');
+    $('devPresets').addEventListener('change', (e) => { if (e.target.value) setSimTime(at(e.target.value)); e.target.value = ''; });
     $('devSet').addEventListener('click', () => { const v = $('devInput').value; if (v) { const ms = at(v); if (!Number.isNaN(ms)) setSimTime(ms); } });
     $('devInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') $('devSet').click(); });
     $('devPrev').addEventListener('click', () => stepStage(-1));
@@ -599,6 +675,7 @@
     updateTrack(t, cur);
     if (phase !== shownPhase) { shownPhase = phase; renderNow(phase); }
     updateNow(t, cur);
+    updateDrop(t);
     if (sim) {
       $('simBannerTime').textContent = mytFull.format(new Date(t));
       if (devOpen) $('devNow').textContent = mytFull.format(new Date(t));
@@ -654,6 +731,7 @@
     });
   }
 
+  $('drop').addEventListener('click', () => { dropDismissed = true; burstUntil = 0; $('drop').hidden = true; });
   buildBackdrop();
   buildTrack();
   wireHonk();
