@@ -11,7 +11,7 @@
 
   /* ------------------------------------------------------------------
      ORGANISERS: edit this one line at the opening (30 Nov, 18:00).
-     Leave it empty and the site just says "check WhatsApp and your email".
+     Leave it empty and, after the drop, the topic card says it is being posted on the page.
      Do NOT fill it in before the opening (anyone could read it in "view source").
      ------------------------------------------------------------------ */
   const TOPIC = '';
@@ -26,12 +26,15 @@
       startLabel: 'Mon 30 Nov · 18:00', endLabel: 'Wed 2 Dec · 23:59',
       deadline: 'Proposal report due', who: 'All teams',
       tasks: [
-        'Join the <b>WhatsApp group</b>. Announcements live there.',
-        'Get the <b>assignment &amp; topic</b> (sent by email and announced in the group).',
-        'Form your team: <b>2 or 3 members</b>, no solo teams. Individuals get matched.',
-        'Brainstorm the <b>dumbest idea</b> that still solves a real pain point. AI tools are allowed. F**k the laws of physics.',
+        'Read the <b>topic</b> on this page.',
+        'Pick your <b>dumbest (but smart) idea</b>. It must solve a real pain point. AI tools are allowed. F**k the laws of physics.',
         '<b>Confirm your idea</b> (Day 2, Tue 1 Dec).',
-        'Write the <b>proposal report</b> (max 2 pages): startup name &amp; tagline, the pain point, the solution, the customer. <b>Do not explain the joke.</b>',
+        'Write your <b>proposal report</b> (max 2 pages), in this order:',
+        '<b>1. Startup name &amp; tagline</b>',
+        '<b>2. The pain point</b>',
+        '<b>3. The solution</b>',
+        '<b>4. The customer</b>',
+        'Do <b>not</b> explain the joke. Present everything with full confidence.',
         '<b>Submit the proposal report</b> by Wed 2 Dec, 23:59.',
       ],
     },
@@ -282,7 +285,7 @@
       ],
       panels: ['topic', 'prizes'],
     },
-    brainstorm: { panels: ['topic', 'rule', 'proposal', 'inspo'] },
+    brainstorm: { panels: ['topic', 'rule', 'inspo'] },
     shortlist: { panels: ['goose'] },
     build: { panels: ['judging'] },
     prep: { panels: ['judging'] },
@@ -298,10 +301,10 @@
           <p class="eyebrow">The assignment</p>
           ${phase === 'pre' ? `
             <h3>🔒 TOPIC: ████████████</h3>
-            <p>Classified. Locked. Top secret. It is sent by email and announced in the WhatsApp group the moment the clock hits zero.</p>
+            <p>Classified. Locked. Top secret. It appears right here the moment the clock hits zero.</p>
             <p class="topic-count">Declassified in <b data-k="topicCd">--</b></p>` : `
             <h3>🔓 ${TOPIC ? esc(TOPIC) : 'THE TOPIC HAS DROPPED'}</h3>
-            <p>${TOPIC ? 'Now go be gloriously dumb about it.' : 'Check your email and the WhatsApp group. Then start brainstorming your silliest startup.'}</p>`}
+            <p>${TOPIC ? 'Now go be gloriously dumb about it.' : 'The topic is being posted on this page. Refresh in a moment.'}</p>`}
         </div>
       </div>`,
 
@@ -309,18 +312,6 @@
       <div class="panel wide">
         <p class="eyebrow">The One Rule</p>
         <p class="rule-text">Imagine you're a Nottingham student who can start <b>any startup</b> or build <b>anything</b> for campus. Come up with the <mark>funniest solution</mark> and present it with <mark>full confidence</mark>. It doesn't have to be realistic, but it has to be <b>creative</b>. <mark>F**k the laws of physics.</mark> Every idea must solve a <b>pain point</b>. AI tools are allowed.</p>
-      </div>`,
-
-    proposal: () => `
-      <div class="panel">
-        <p class="eyebrow">Proposal report <small>(max 2 pages)</small></p>
-        <ol class="list num">
-          <li>Startup name &amp; tagline</li>
-          <li>The pain point</li>
-          <li>The solution</li>
-          <li>The customer</li>
-        </ol>
-        <p class="callout">⚠️ Do <b>not</b> explain the joke. Present everything with full confidence.</p>
       </div>`,
 
     inspo: () => `
