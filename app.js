@@ -17,7 +17,7 @@
      ================================================================== */
   const TOPIC = '';
   const BRIEF = 'Imagine you are a Nottingham student who can start <b>any startup</b> or build <b>anything</b> for campus. '
-    + 'Come up with the <mark>funniest solution</mark> and present it with <mark>full confidence</mark>. '
+    + 'Come up with the <mark>funniest and the most creative solution</mark> and present it with <mark>full confidence</mark>. '
     + 'It can be anything and does not have to be realistic, but it has to be <b>creative</b> and <b>follow the laws of physics</b>. '
     + 'Every idea must solve a <b>pain point</b>. AI tools are <b>strongly encouraged</b>.';
   const SUBMIT_PROPOSAL_URL = '';
