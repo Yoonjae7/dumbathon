@@ -42,13 +42,13 @@
       extras: ['format'],
     },
     {
-      id: 'shortlist', short: 'Shortlist', name: 'Shortlist', label: 'Shortlist announced in',
-      tag: 'Refresh your email. No wait, don\'t.', who: 'All teams',
+      id: 'shortlist', short: 'Shortlist', name: 'Shortlist', label: 'Top teams revealed in',
+      tag: 'Refresh this page. No wait, don\'t.', who: 'All teams',
       start: at('2026-12-02T23:59:59'), end: at('2026-12-03T18:00:00'),
       startLabel: 'Wed 2 Dec · 23:59', endLabel: 'Thu 3 Dec · 18:00',
       tasks: [
         'Sit tight. The presidents and vice presidents of the hosting societies are picking the top teams.',
-        'Watch your <b>email</b>. Results are sent by <b>email only</b>, not on WhatsApp.',
+        'The <b>top teams</b> are announced <b>right here on this page</b>, Thu 3 Dec at 18:00.',
         'Shortlisted teams build a prototype and pitch on the night.',
       ],
       extras: ['goose'],
@@ -127,7 +127,7 @@
     day: ['Tomorrow-you is going to be SO mad at today-you.', 'Open the doc. Opening it counts as progress.'],
     urgent: ['Under 6 hours. Stop scrolling.', 'It does not have to be good. It has to be submitted.'],
     panic: ['PANIC(); PANIC(); PANIC();', 'SUBMIT IT. IT DOES NOT NEED TO BE GOOD.', 'Have you tried submitting it?'],
-    wait: ['Out of your hands now. Stare at your inbox.', 'Somewhere a society president is reading your startup name.'],
+    wait: ['Out of your hands now. Stare at this page.', 'Somewhere a society president is reading your startup name.'],
     prep: ['Put the keyboard down.', 'Rehearse in the mirror. Keep a straight face.'],
     live: ['Judges are watching. Pitch like you mean it.', 'Confidence is a skill. Skill issue is optional.'],
     post: ['Brain cells: 0. Worth it.', 'Go touch grass. You earned it.'],
@@ -454,12 +454,40 @@
     });
   }
 
+  /* ---------- top teams (data lives in teams.js) ----------
+     hidden until the shortlist stage, locked while it runs, listed once it ends */
+  let teamsState = null;
+  function updateTeams(t) {
+    const shortlist = stageById('shortlist');
+    const state = t < shortlist.start ? 'hidden' : t < shortlist.end ? 'locked' : 'open';
+    if (state === teamsState) return;
+    teamsState = state;
+    $('teams').hidden = state === 'hidden';
+    $('teamsLink').hidden = state === 'hidden';
+
+    const teams = (Array.isArray(window.TOP_TEAMS) ? window.TOP_TEAMS : []).filter((team) => team && team.startup);
+    let html = '';
+    if (state === 'locked') {
+      html = `<p class="team-wait">🔒 The top teams are revealed here on <b>${shortlist.endLabel}</b>.</p>`;
+    } else if (state === 'open' && !teams.length) {
+      html = '<p class="team-wait">🥁 Top teams: to be announced.</p>';
+    } else if (state === 'open') {
+      html = `<ul class="team-list">${teams.map((team) => `
+        <li>
+          <b>${esc(team.startup)}</b>
+          ${team.tagline ? `<em>"${esc(team.tagline)}"</em>` : ''}
+          ${team.members && team.members.length ? `<span>${team.members.map(esc).join(' · ')}</span>` : ''}
+        </li>`).join('')}</ul>`;
+    }
+    $('teamList').innerHTML = html;
+  }
+
   /* ---------- timetable: the whole flow (dates only) ---------- */
   const TIMETABLE = [
     { date: 'Mon 30 Nov', time: '18:00', what: 'Topic drops here. Brainstorming starts.', doneAt: first.start },
     { date: 'Tue 1 Dec', time: 'all day', what: 'Confirm your idea.', doneAt: at('2026-12-01T23:59:59') },
     { date: 'Wed 2 Dec', time: '23:59', what: 'Proposal report due.', doneAt: stageById('brainstorm').end },
-    { date: 'Thu 3 Dec', time: '18:00', what: 'Shortlist announced by email. Building starts.', doneAt: stageById('shortlist').end },
+    { date: 'Thu 3 Dec', time: '18:00', what: 'Top teams announced here. Building starts.', doneAt: stageById('shortlist').end },
     { date: 'Mon 7 Dec', time: '23:59', what: 'GitHub, prototype and slides links due.', doneAt: stageById('build').end },
     { date: 'Tue 8 Dec', time: '17:00', what: 'Pitch night at F1A15, until 19:30.', startAt: stageById('pitch').start, doneAt: last.end },
   ];
@@ -638,6 +666,7 @@
     updateSteps(t, cur);
     if (phase !== shownPhase) { shownPhase = phase; renderTopic(phase); renderTodo(phase); }
     updateLive(t, cur);
+    updateTeams(t);
     updateTimetable(t);
     updateDrop(t);
     if (sim) $('simBannerTime').textContent = mytFull.format(new Date(t));

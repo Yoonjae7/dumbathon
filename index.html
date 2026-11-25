@@ -24,6 +24,7 @@
       <a class="mini" id="mini" href="#top" tabindex="-1"></a>
     </div>
     <nav class="nav" aria-label="Sections">
+      <a href="#teams" id="teamsLink" hidden>Teams</a>
       <a href="#timetable">Timetable</a>
       <a href="#prizes">Prizes</a>
       <a href="guide.html">Guide</a>
@@ -78,6 +79,12 @@
 
   <!-- WHAT TO DO NOW: only the current stage is rendered here -->
   <section id="todo" aria-label="What to do now"></section>
+
+  <!-- TOP TEAMS: appears from the shortlist stage. Edit teams.js to fill it in. -->
+  <section class="card teams" id="teams" hidden>
+    <h2>🏅 Top teams</h2>
+    <div id="teamList"></div>
+  </section>
 
   <section class="card" id="timetable">
     <h2>📅 Timetable</h2>
@@ -151,6 +158,7 @@
 </aside>
 
 <script src="decor.js"></script>
+<script src="teams.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

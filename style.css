@@ -218,6 +218,15 @@ details[open] > summary::after { transform: rotate(45deg); }
 .tt li.next { border-color: var(--teal); background: #122622; box-shadow: 4px 4px 0 var(--teal); }
 .tt li.past { opacity: .5; }
 
+/* top teams */
+.teams { text-align: center; box-shadow: 6px 6px 0 var(--teal); }
+.team-wait { margin-top: 18px; padding: 20px 14px; border: 2px dashed var(--yellow); border-radius: 6px; color: var(--yellow); }
+.team-list { list-style: none; margin: 20px 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px; text-align: left; }
+.team-list li { border: 3px solid var(--ink); border-radius: 6px; background: var(--panel2); box-shadow: 4px 4px 0 var(--pink); padding: 12px 14px; overflow-wrap: anywhere; animation: reveal .6s cubic-bezier(.2, 1.4, .4, 1) both; }
+.team-list b { display: block; font-size: 16px; }
+.team-list em { display: block; margin-top: 4px; font-style: normal; font-size: 13px; color: var(--pink); }
+.team-list span { display: block; margin-top: 8px; font-size: 12.5px; color: var(--muted); }
+
 /* prizes */
 .prizes { text-align: center; box-shadow: 6px 6px 0 var(--yellow); }
 .podium { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; align-items: end; height: 180px; max-width: 480px; margin: 18px auto 16px; }
