@@ -46,10 +46,11 @@
       tag: 'Refresh this page. No wait, don\'t.', who: 'All teams',
       start: at('2026-12-02T23:59:59'), end: at('2026-12-03T18:00:00'),
       startLabel: 'Wed 2 Dec · 23:59', endLabel: 'Thu 3 Dec · 18:00',
+      info: true, // nothing to do here: shown as plain notes, not tick boxes
       tasks: [
         'Sit tight. The presidents and vice presidents of the hosting societies are picking the top teams.',
         'The <b>top teams</b> are announced <b>right here on this page</b>, Thu 3 Dec at 18:00.',
-        'Shortlisted teams build a prototype and pitch on the night.',
+        'Top teams build a prototype and <b>pitch their idea</b> on Pitch Night: <b>Tue 8 Dec, 17:00, F1A15</b>.',
       ],
       extras: ['goose'],
     },
@@ -397,8 +398,10 @@
   function renderTodo(phase) {
     const st = stageById(phase);
     const P = st || OUTSIDE[phase];
-    const eyebrow = st ? `What to do now · ${st.who}` : phase === 'pre' ? 'Before it starts' : 'Done and dusted';
+    const eyebrow = st ? `${P.info ? 'What\'s happening' : 'What to do now'} · ${st.who}` : phase === 'pre' ? 'Before it starts' : 'Done and dusted';
+    const tickable = !P.info && P.tasks.length > 0;
     const tasks = P.tasks.map((t, j) => {
+      if (!tickable) return `<li>${t}</li>`;
       const key = `dumbathon26:v2:${phase}:${j}`;
       return `<li><label><input type="checkbox" data-key="${key}" ${store.get(key) === '1' ? 'checked' : ''}><span>${t}</span></label></li>`;
     }).join('');
@@ -406,16 +409,16 @@
     $('todo').dataset.kind = st ? 'live' : phase;
     $('todo').innerHTML = `
       <div class="card">
-        ${st ? droppedTopic() : ''}
+        ${phase === 'brainstorm' ? droppedTopic() : ''}
         <div class="card-head">
           <div>
             <p class="eyebrow">${eyebrow}</p>
             <h2>${P.name}</h2>
             <p class="stage-tag">${P.tag}</p>
           </div>
-          ${tasks ? '<div class="progress"><b id="doneCount"></b><div class="meter"><i id="doneFill"></i></div></div>' : ''}
+          ${tickable ? '<div class="progress"><b id="doneCount"></b><div class="meter"><i id="doneFill"></i></div></div>' : ''}
         </div>
-        ${tasks ? `<ul class="tasks">${tasks}</ul>` : ''}
+        ${tasks ? `<ul class="${tickable ? 'tasks' : 'notes'}">${tasks}</ul>` : ''}
         ${P.extras.map((k) => EXTRAS[k]()).join('')}
         <p class="upnext" id="upNext" hidden></p>
       </div>`;
@@ -429,13 +432,17 @@
     const all = done === boxes.length;
     $('doneCount').textContent = all ? 'All done 🎉' : `${done}/${boxes.length} done`;
     $('doneFill').style.width = (done / boxes.length) * 100 + '%';
-    if (all && celebrate && !reducedMotion) {
-      const box = document.createElement('div');
-      box.className = 'confetti fixed';
-      document.body.appendChild(box);
-      spawnConfetti(box, 60);
-      setTimeout(() => box.remove(), 4200);
-    }
+    if (all && celebrate) burstConfetti(60);
+  }
+
+  /* a one-off shower of confetti over the whole page */
+  function burstConfetti(count) {
+    if (reducedMotion) return;
+    const box = document.createElement('div');
+    box.className = 'confetti fixed';
+    document.body.appendChild(box);
+    spawnConfetti(box, count);
+    setTimeout(() => box.remove(), 4200);
   }
 
   /* things inside the cards that change every tick */
@@ -454,32 +461,58 @@
     });
   }
 
-  /* ---------- top teams (data lives in teams.js) ----------
-     hidden until the shortlist stage, locked while it runs, listed once it ends */
-  let teamsState = null;
+  /* ---------- top teams (data lives in teams.js), shown right under the countdown ----------
+     hidden until the shortlist stage, locked while it runs, then the list with a celebration */
+  let teamsShown = null;
+  let lastPoll = 0;
+
+  // visitors who already have the page open get the list without refreshing: re-read teams.js now and then
+  function pollTeams() {
+    if (Date.now() - lastPoll < 30000) return;
+    lastPoll = Date.now();
+    const script = document.createElement('script');
+    script.src = `teams.js?ts=${lastPoll}`;
+    script.onload = script.onerror = () => script.remove();
+    document.head.appendChild(script);
+  }
+
   function updateTeams(t) {
     const shortlist = stageById('shortlist');
-    const state = t < shortlist.start ? 'hidden' : t < shortlist.end ? 'locked' : 'open';
-    if (state === teamsState) return;
-    teamsState = state;
+    const state = t < shortlist.start ? 'hidden' : t < shortlist.end ? 'locked' : t < last.end ? 'open' : 'done';
+    const teams = (Array.isArray(window.TOP_TEAMS) ? window.TOP_TEAMS : []).filter((team) => team && team.startup);
+    if (state === 'open' && !teams.length) pollTeams();
+
+    const signature = `${state}:${teams.length}`;
+    if (signature === teamsShown) return;
+    teamsShown = signature;
+
     $('teams').hidden = state === 'hidden';
     $('teamsLink').hidden = state === 'hidden';
+    const revealed = (state === 'open' || state === 'done') && teams.length > 0;
+    $('teams').classList.toggle('won', revealed);
+    $('teamsTitle').className = revealed ? 'congrats' : '';
+    $('teamsTitle').textContent = revealed ? '🎉 Congratulations, top teams! 🎉' : '🏅 Top teams';
 
-    const teams = (Array.isArray(window.TOP_TEAMS) ? window.TOP_TEAMS : []).filter((team) => team && team.startup);
+    const pitchDay = '<b>Tuesday 8 December, 17:00</b> at <b>F1A15</b>';
     let html = '';
     if (state === 'locked') {
-      html = `<p class="team-wait">🔒 The top teams are revealed here on <b>${shortlist.endLabel}</b>.</p>`;
-    } else if (state === 'open' && !teams.length) {
-      html = '<p class="team-wait">🥁 Top teams: to be announced.</p>';
-    } else if (state === 'open') {
-      html = `<ul class="team-list">${teams.map((team) => `
-        <li>
-          <b>${esc(team.startup)}</b>
-          ${team.tagline ? `<em>"${esc(team.tagline)}"</em>` : ''}
-          ${team.members && team.members.length ? `<span>${team.members.map(esc).join(' · ')}</span>` : ''}
-        </li>`).join('')}</ul>`;
+      html = `<p class="team-wait">🔒 The top teams are revealed here on <b>${shortlist.endLabel}</b>.</p>
+        <p class="pitch-note">🎤 Top teams will <b>pitch their idea</b> on Pitch Night: ${pitchDay}.</p>`;
+    } else if (state !== 'hidden') {
+      html = revealed
+        ? `<ul class="team-list">${teams.map((team, i) => `
+            <li style="animation-delay:${(0.35 + i * 0.12).toFixed(2)}s">
+              <b>${esc(team.startup)}</b>
+              ${team.tagline ? `<em>"${esc(team.tagline)}"</em>` : ''}
+              ${team.members && team.members.length ? `<span>${team.members.map(esc).join(' · ')}</span>` : ''}
+            </li>`).join('')}</ul>`
+        : '<p class="team-wait">🥁 Top teams: to be announced.</p>';
+      if (state === 'open') {
+        html += `<p class="pitch-note">🎤 ${revealed ? 'You will be <b>pitching your idea</b>' : 'Top teams will be <b>pitching their idea</b>'} on Pitch Night: ${pitchDay}.</p>`;
+      }
     }
     $('teamList').innerHTML = html;
+    if (revealed) burstConfetti(110);
   }
 
   /* ---------- timetable: the whole flow (dates only) ---------- */
@@ -664,7 +697,12 @@
     const phase = cur.mode === 'live' ? cur.stage.id : cur.mode;
     updateHero(t, cur);
     updateSteps(t, cur);
-    if (phase !== shownPhase) { shownPhase = phase; renderTopic(phase); renderTodo(phase); }
+    if (phase !== shownPhase) {
+      shownPhase = phase;
+      renderTopic(phase);
+      renderTodo(phase);
+      $('guideLink').hidden = phase !== 'build'; // the guide is only for the hacking stage
+    }
     updateLive(t, cur);
     updateTeams(t);
     updateTimetable(t);

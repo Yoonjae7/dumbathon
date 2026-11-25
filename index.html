@@ -27,7 +27,7 @@
       <a href="#teams" id="teamsLink" hidden>Teams</a>
       <a href="#timetable">Timetable</a>
       <a href="#prizes">Prizes</a>
-      <a href="guide.html">Guide</a>
+      <a href="guide.html" id="guideLink" hidden>Guide</a>
     </nav>
   </div>
 </header>
@@ -68,6 +68,12 @@
       </div>
     </div>
 
+    <!-- TOP TEAMS: right under the countdown from the shortlist stage. Edit teams.js to fill it in. -->
+    <section class="card teams" id="teams" hidden aria-live="polite">
+      <h2 id="teamsTitle">🏅 Top teams</h2>
+      <div id="teamList"></div>
+    </section>
+
     <ol class="track" id="steps" aria-label="Stages"></ol>
   </section>
 
@@ -79,12 +85,6 @@
 
   <!-- WHAT TO DO NOW: only the current stage is rendered here -->
   <section id="todo" aria-label="What to do now"></section>
-
-  <!-- TOP TEAMS: appears from the shortlist stage. Edit teams.js to fill it in. -->
-  <section class="card teams" id="teams" hidden>
-    <h2>🏅 Top teams</h2>
-    <div id="teamList"></div>
-  </section>
 
   <section class="card" id="timetable">
     <h2>📅 Timetable</h2>
