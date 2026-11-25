@@ -1,3 +1,5 @@
 # Confidential source documents (proposal/EPF contain private details)
 *.pdf
+# ...except the public proposal example that the site offers for download
+!assets/Dumbathon_Proposal_Example.pdf
 .claude/

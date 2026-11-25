@@ -1,183 +1,142 @@
-/* Dumb-A-Thon 2026 live tracker
+/* Dumb-A-Thon 2026 tracker
    Dates come from the EPF (30 Nov to 8 Dec 2026). Tasks come from the formal proposal.
    Every time is Malaysia time (UTC+8) so the countdown is identical for everyone, wherever they are.
 
-   The page only ever shows what applies to the CURRENT stage (see PHASES). When the clock moves
-   into the next stage, the card is swapped for that stage's tasks and info.
-   NOTE: this is a static site, so upcoming content is hidden from the page but still sits in this file.
-   It stops casual peeking, not someone who reads the source. */
+   The "to-do" card only ever shows the CURRENT stage. Upcoming content is hidden from the page,
+   but this is a static site, so it still sits in this file. It stops casual peeking, not someone
+   who reads the source. */
 (() => {
   'use strict';
 
-  /* ------------------------------------------------------------------
-     ORGANISERS: edit this one line at the opening (30 Nov, 18:00).
-     Leave it empty and, after the drop, the topic card says it is being posted on the page.
-     Do NOT fill it in before the opening (anyone could read it in "view source").
-     ------------------------------------------------------------------ */
+  /* ==================================================================
+     ORGANISERS: these three lines are the only ones you should need to edit.
+     TOPIC: paste it at the opening (30 Nov, 18:00). Never earlier, because anyone can view source.
+     SUBMIT_*: paste a form link and a "Submit" button appears in that stage. Empty = no button.
+     ================================================================== */
   const TOPIC = '';
+  const SUBMIT_PROPOSAL_URL = '';
+  const SUBMIT_FINAL_URL = '';
 
   const MYT = '+08:00';
   const at = (iso) => new Date(iso + MYT).getTime();
 
   const STAGES = [
     {
-      id: 'brainstorm', short: 'Brainstorm', name: 'Brainstorm & Proposal', tag: 'Think dumb. Write confidently.',
+      id: 'brainstorm', short: 'Brainstorm', name: 'Brainstorm & Proposal', label: 'Proposal due in',
+      tag: 'Think dumb. Write confidently.', who: 'All teams',
       start: at('2026-11-30T18:00:00'), end: at('2026-12-02T23:59:59'),
       startLabel: 'Mon 30 Nov · 18:00', endLabel: 'Wed 2 Dec · 23:59',
-      deadline: 'Proposal report due', who: 'All teams',
       tasks: [
-        'Read the <b>topic</b> on this page.',
-        'Pick your <b>dumbest (but smart) idea</b>. It must solve a real pain point. AI tools are allowed. Follow the laws of physics.',
-        '<b>Confirm your idea</b> (Day 2, Tue 1 Dec).',
-        'Write your <b>proposal report</b> (max 2 pages), in this order:',
-        '<b>1. Startup name &amp; tagline</b>',
-        '<b>2. The pain point</b>',
-        '<b>3. The solution</b>',
-        '<b>4. The customer</b>',
-        'Do <b>not</b> explain the joke. Present everything with full confidence.',
-        '<b>Submit the proposal report</b> by Wed 2 Dec, 23:59.',
+        'Read the <b>topic</b> above.',
+        'Pick your <b>dumbest (but smart) idea</b>. It must solve a real pain point and follow the laws of physics. AI tools are allowed.',
+        '<b>Confirm your idea</b> (Tue 1 Dec).',
+        'Write your <b>proposal report</b> using the format below.',
+        '<b>Submit it</b> by Wed 2 Dec, 23:59.',
       ],
+      extras: ['format', 'rule'],
     },
     {
-      id: 'shortlist', short: 'Shortlist', name: 'Shortlist', tag: 'Refresh your email. No wait, don\'t.',
+      id: 'shortlist', short: 'Shortlist', name: 'Shortlist', label: 'Shortlist announced in',
+      tag: 'Refresh your email. No wait, don\'t.', who: 'All teams',
       start: at('2026-12-02T23:59:59'), end: at('2026-12-03T18:00:00'),
       startLabel: 'Wed 2 Dec · 23:59', endLabel: 'Thu 3 Dec · 18:00',
-      deadline: 'Shortlist announced', who: 'All teams',
       tasks: [
         'Sit tight. The presidents and vice presidents of the hosting societies are picking the top teams.',
         'Watch your <b>email</b>. Results are sent by <b>email only</b>, not on WhatsApp.',
-        'Shortlisted? Only <b>shortlisted teams</b> build the prototype and pitch on the night.',
+        'Shortlisted teams build a prototype and pitch on the night.',
       ],
+      extras: ['goose'],
     },
     {
-      id: 'build', short: 'Build', name: 'Build', tag: 'Prototype it. Ship it. Pray to Vercel.',
+      id: 'build', short: 'Build', name: 'Build', label: 'Submissions close in',
+      tag: 'Let AI do the heavy lifting.', who: 'Shortlisted teams',
       start: at('2026-12-03T18:00:00'), end: at('2026-12-07T23:59:59'),
       startLabel: 'Thu 3 Dec · 18:00', endLabel: 'Mon 7 Dec · 23:59',
-      deadline: 'GitHub link, Vercel link & slides due', who: 'Shortlisted teams',
       tasks: [
-        'Build your <b>working prototype</b>.',
-        'Push the code to a <b>GitHub repo</b>.',
-        'Deploy it <b>live on Vercel</b>. Judges will click it.',
-        'Make your <b>pitch slides</b>. These are the ones you present on the night.',
-        '<b>Submit</b> the GitHub link, the Vercel link and the slides by Mon 7 Dec, 23:59.',
+        'Build your <b>prototype</b> with AI. <b>Any kind counts</b>. It does not have to be a website.',
+        'Put your project in a <b>GitHub repo</b> and set it to Public.',
+        'Make your <b>pitch slides</b> and copy the <b>share link</b>.',
+        'Open all 3 links in a private window to check that they work.',
+        '<b>Submit the 3 links</b> by Mon 7 Dec, 23:59.',
       ],
+      extras: ['links', 'judging'],
     },
     {
-      id: 'prep', short: 'Pitch prep', name: 'Pitch Prep', tag: 'Submissions locked. Touch no code.',
+      id: 'prep', short: 'Prep', name: 'Pitch Prep', label: 'Pitch night starts in',
+      tag: 'Submissions are closed. Practise your straight face.', who: 'Shortlisted teams',
       start: at('2026-12-07T23:59:59'), end: at('2026-12-08T17:00:00'),
       startLabel: 'Mon 7 Dec · 23:59', endLabel: 'Tue 8 Dec · 17:00',
-      deadline: 'Doors open at F1A15', who: 'Shortlisted teams',
       tasks: [
-        'Check your <b>Vercel link is still live</b>. Product Execution is 25% of your score.',
-        'Rehearse your pitch. <b>Confidence and delivery</b> count for 25%.',
+        'Check that your <b>prototype link</b> and <b>slides link</b> still open.',
+        'Rehearse your pitch. <b>Confidence and delivery</b> matter.',
         'Get to <b>F1A15</b> before 17:00 (backup rooms: F1A11, F3A08).',
-        'Bring a laptop and your best straight face.',
+        'Bring a laptop, plus your prototype if it is a physical one.',
       ],
+      extras: ['judging'],
     },
     {
-      id: 'pitch', short: 'Pitch night', name: 'Pitch Night', tag: 'Say it with full confidence.',
+      id: 'pitch', short: 'Pitch', name: 'Pitch Night', label: 'Event closes in',
+      tag: 'Say it with full confidence.', who: 'Shortlisted teams',
       start: at('2026-12-08T17:00:00'), end: at('2026-12-08T19:30:00'),
       startLabel: 'Tue 8 Dec · 17:00', endLabel: 'Tue 8 Dec · 19:30',
-      deadline: 'Closing ceremony', who: 'Shortlisted teams',
       tasks: [
         'Register and take your seat at <b>F1A15</b>.',
-        'Pitch your idea and demo your prototype. <b>Do not explain the joke.</b>',
-        'Judges score you on <b>Creative Absurdity (30%)</b>, <b>Practicality (20%)</b>, <b>Product Execution (25%)</b> and <b>Presentation (25%)</b>.',
-        'Stay for the prizes: <b>RM400 / RM200 / RM100</b> in GrabPay or ShopeePay vouchers.',
+        'Pitch your idea and show your prototype. <b>Do not explain the joke.</b>',
+        'Stay for the prizes.',
       ],
-      itinerary: [
-        { s: '2026-12-08T17:00:00', e: '2026-12-08T17:15:00', t: '17:00 – 17:15', a: 'Registration, welcome & opening' },
-        { s: '2026-12-08T17:15:00', e: '2026-12-08T17:30:00', t: '17:15 – 17:30', a: 'Introduction of judges & shortlisted groups' },
-        { s: '2026-12-08T17:30:00', e: '2026-12-08T19:00:00', t: '17:30 – 19:00', a: 'Idea pitching', d: 'Teams pitch and demo. Judges grade live.' },
-        { s: '2026-12-08T19:00:00', e: '2026-12-08T19:15:00', t: '19:00 – 19:15', a: 'Prize giving ceremony', d: 'Top 3 announced. GrabPay or ShopeePay vouchers.' },
-        { s: '2026-12-08T19:15:00', e: '2026-12-08T19:30:00', t: '19:15 – 19:30', a: 'Event closing' },
-      ],
+      extras: ['itinerary', 'judging'],
     },
   ];
-  STAGES.forEach((s) => (s.itinerary || []).forEach((i) => { i.s = at(i.s); i.e = at(i.e); }));
+
+  /* before the opening and after the closing */
+  const OUTSIDE = {
+    pre: {
+      name: 'Get ready', tag: 'Brain cells: loading…',
+      tasks: [
+        'Join the <b>WhatsApp group</b>. Announcements live there.',
+        'Find your team: <b>2 or 3 members</b>, no solo. Individuals get matched.',
+        'Charge your laptop and lower your standards.',
+      ],
+      extras: [],
+    },
+    post: { name: 'That\'s a wrap', tag: 'Thanks for being gloriously dumb with us.', tasks: [], extras: ['goose'] },
+  };
+
+  const ITINERARY = [
+    ['17:00', '17:15', 'Registration, welcome & opening'],
+    ['17:15', '17:30', 'Introducing judges & shortlisted groups'],
+    ['17:30', '19:00', 'Idea pitching (judges grade live)'],
+    ['19:00', '19:15', 'Prize giving: GrabPay or ShopeePay vouchers'],
+    ['19:15', '19:30', 'Event closing'],
+  ].map(([s, e, what]) => ({ s: at(`2026-12-08T${s}:00`), e: at(`2026-12-08T${e}:00`), t: `${s} – ${e}`, what }));
+
+  const CRITERIA = [
+    { name: 'Creative Absurdity', w: 30, d: 'How original, funny and gloriously dumb the idea is.' },
+    { name: 'Practicality', w: 20, d: 'Does it actually solve the pain point, and could it work in real life (within the laws of physics)?' },
+    { name: 'Product Execution', w: 25, d: 'Does the prototype work, and do the GitHub repo and prototype links open? It does not have to be a hosted website.' },
+    { name: 'Presentation', w: 25, d: 'Confidence, delivery and quality of the slides.' },
+  ];
+
+  const QUIPS = {
+    pre: ['Brain cells: fully loaded. Not for long.', 'Find two friends. Or let us find some for you.', 'The topic is locked. Even we are scared of it.'],
+    calm: ['Plenty of time. (You will still do it in the last hour.)', 'Dumb ideas only. Unless they are dumb but smart.', 'Drink water. Honk occasionally.'],
+    day: ['Tomorrow-you is going to be SO mad at today-you.', 'Open the doc. Opening it counts as progress.'],
+    urgent: ['Under 6 hours. Stop scrolling.', 'It does not have to be good. It has to be submitted.'],
+    panic: ['PANIC(); PANIC(); PANIC();', 'SUBMIT IT. IT DOES NOT NEED TO BE GOOD.', 'Have you tried submitting it?'],
+    wait: ['Out of your hands now. Stare at your inbox.', 'Somewhere a society president is reading your startup name.'],
+    prep: ['Put the keyboard down.', 'Rehearse in the mirror. Keep a straight face.'],
+    live: ['Judges are watching. Pitch like you mean it.', 'Confidence is a skill. Skill issue is optional.'],
+    post: ['Brain cells: 0. Worth it.', 'Go touch grass. You earned it.'],
+  };
 
   const first = STAGES[0];
   const last = STAGES[STAGES.length - 1];
   const stageById = (id) => STAGES.find((s) => s.id === id);
 
-  const CRITERIA = [
-    { name: 'Creative Absurdity', w: 30, d: 'How original, funny and gloriously dumb the idea is.' },
-    { name: 'Practicality', w: 20, d: 'Does it actually solve the pain point, and could it work in real life (within the laws of physics)?' },
-    { name: 'Product Execution', w: 25, d: 'Does the prototype work, and are the GitHub repo and Vercel link live?' },
-    { name: 'Presentation', w: 25, d: 'Confidence, delivery and quality of the slides.' },
-  ];
-
-  const TICKER = [
-    'FREE POOL RM700', 'NO SOLO TEAMS', 'DO NOT EXPLAIN THE JOKE', 'AI TOOLS ALLOWED',
-    'LAWS OF PHYSICS STILL APPLY', 'RESULTS BY EMAIL ONLY', 'BE CONFIDENTLY DUMB', 'GILBERT IS WATCHING',
-  ];
-
-  const CODE_LINES = [
-    'if (deadline == tomorrow) { panic(); }',
-    'function submitAnything() { return "trust the process"; }',
-    'while (!idea.isGood()) { idea.makeItDumber(); }',
-    'team.gather(); team.cook(); if (team.isPanicking()) coffee++;',
-    'braincells--; braincells--; braincells--; // skill issue',
-    'switch (motivation) { case "Monday": procrastinate(); break; }',
-    'const vercel = await deploy(); // pray',
-    'console.log("HEAR ME OUT. idea.isQuestionable() == true");',
-    'if (life.isHard()) { cope(); seethe(); repeat(); }',
-    'rizz.unlock(); grass.touch(); aura += 1000;',
-    'catch (err) { blame(AI); }',
-    'system.crash(); restart(); // as is tradition',
-  ];
-
-  const QUIPS = {
-    pre: [
-      'Brain cells: fully loaded. Not for long.',
-      'Charge your laptop. Lower your standards.',
-      'Find two friends. Or let us find some for you.',
-      'The topic is locked. Even we are scared of it.',
-    ],
-    calm: [
-      'Plenty of time. (You will still do it in the last hour.)',
-      'Dumb ideas only. Smart ideas will be asked to leave. (Unless they are dumb but smart.)',
-      'Drink water. Honk occasionally.',
-      'Remember: you are not explaining the joke.',
-    ],
-    day: [
-      'Tomorrow-you is going to be SO mad at today-you.',
-      'Under 24 hours. The "I work best under pressure" era begins.',
-      'Open the doc. Opening it counts as progress.',
-    ],
-    urgent: [
-      'Skill issue loading…',
-      'Under 6 hours. This is your sign to stop scrolling.',
-      'It does not have to be good. It has to be submitted.',
-    ],
-    panic: [
-      'PANIC(); PANIC(); PANIC();',
-      'SUBMIT IT. IT DOES NOT NEED TO BE GOOD.',
-      'Have you tried submitting it?',
-      'countdown.exe has stopped responding. So should you.',
-    ],
-    wait: [
-      'Out of your hands now. Stare at your inbox.',
-      'Somewhere a society president is reading your startup name.',
-    ],
-    prep: [
-      'No more commits. Put the keyboard down.',
-      'Rehearse in the mirror. Keep a straight face.',
-    ],
-    live: [
-      'Judges are watching. Pitch like you mean it.',
-      'Confidence is a skill. Skill issue is optional.',
-    ],
-    post: [
-      'Dumb-A-Thon 2026 is complete. Brain cells: 0.',
-      'Go touch grass. You earned it.',
-      'Thanks for being gloriously dumb with us.',
-    ],
-  };
-
   const $ = (id) => document.getElementById(id);
   const pad = (n) => String(n).padStart(2, '0');
-  const plural = (n, w) => `${n} ${w}${n === 1 ? '' : 's'}`;
+  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   /* ---------- storage (safe: can throw in private mode) ---------- */
   const store = {
@@ -247,177 +206,256 @@
   const toInputValue = (ms) => new Date(ms + 8 * 3600e3).toISOString().slice(0, 19); // MYT wall clock for <input type=datetime-local>
   const quip = (list, t) => list[Math.floor(t / 15000) % list.length];
 
-  /* ---------- static bits ---------- */
-  function buildBackdrop() {
-    const lines = [];
-    for (let i = 0; i < 60; i++) lines.push(CODE_LINES[i % CODE_LINES.length] + '   ' + CODE_LINES[(i * 5 + 3) % CODE_LINES.length]);
-    $('codeBg').textContent = lines.join('\n');
-    const t = TICKER.join('  ★  ') + '  ★  ';
-    $('tickerTrack').textContent = t + t + t + t;
+  function currentStage(t) {
+    if (t < first.start) return { mode: 'pre' };
+    if (t >= last.end) return { mode: 'post' };
+    const i = STAGES.findIndex((s) => t >= s.start && t < s.end);
+    return { mode: 'live', i, stage: STAGES[i] };
   }
 
-  function buildCriteria() {
-    const box = $('criteria');
-    if (!box) return;
-    box.innerHTML = CRITERIA.map((c) => `
-      <div class="crit-row">
-        <div class="crit-top"><b>${c.name}</b><span>${c.w}%</span></div>
-        <div class="crit-bar"><i data-w="${c.w * 3}"></i></div>
-        <p>${c.d}</p>
-      </div>`).join('');
-    requestAnimationFrame(() => requestAnimationFrame(() => {
-      box.querySelectorAll('.crit-bar i').forEach((el) => { el.style.width = Math.min(100, Number(el.dataset.w)) + '%'; });
-    }));
+  /* ---------- hero: the big centred countdown ---------- */
+  function setDigit(id, value) {
+    const el = $(id);
+    if (el.textContent === value) return;
+    el.textContent = value;
+    el.classList.remove('roll'); void el.offsetWidth; el.classList.add('roll');
   }
 
-  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  function updateHero(t, cur) {
+    let rem = 0, pct = 0, level = 'calm', pill, label, when;
 
-  /* ---------- what to show in each phase ----------
-     Only the current phase is ever rendered. Stage phases take their title/tasks from STAGES. */
-  const PHASES = {
-    pre: {
-      title: 'Get ready', tag: 'Brain cells: loading…',
-      tasks: [
-        'Join the <b>WhatsApp group</b>. Announcements live there.',
-        'Find your team: <b>2 or 3 members</b>, no solo teams. Friends can sign up together. Individuals get matched.',
-        'Charge your laptop and lower your standards.',
-        'The topic drops on <b>Mon 30 Nov at 18:00</b>. Not a second earlier.',
-      ],
-      panels: ['topic'],
-    },
-    brainstorm: { panels: ['topic', 'rule', 'inspo'] },
-    shortlist: { panels: ['goose'] },
-    build: { panels: ['judging'] },
-    prep: { panels: ['judging'] },
-    pitch: { panels: ['itinerary', 'judging'] },
-    post: { title: 'That\'s a wrap', tag: 'Brain cells: 0. Worth it.', tasks: [], panels: ['goose'] },
-  };
+    if (cur.mode === 'pre') {
+      rem = first.start - t;
+      pill = 'Not started yet';
+      label = 'Topic drops in';
+      when = `<b>${first.startLabel}</b>, Malaysia time`;
+      level = 'pre';
+    } else if (cur.mode === 'post') {
+      pill = 'Finished';
+      label = 'That\'s a wrap. Go touch grass.';
+      when = 'Dumb-A-Thon 2026 · 30 Nov to 8 Dec';
+      level = 'post';
+    } else {
+      const s = cur.stage;
+      rem = s.end - t;
+      pct = ((t - s.start) / (s.end - s.start)) * 100;
+      pill = `Stage ${cur.i + 1} of ${STAGES.length} · ${s.name}`;
+      label = s.label;
+      when = `<b>${s.endLabel}</b>, Malaysia time`;
+      if (s.id === 'shortlist') level = 'wait';
+      else if (s.id === 'prep') level = 'prep';
+      else if (s.id === 'pitch') level = 'live';
+      else level = rem < 3600e3 ? 'panic' : rem < 6 * 3600e3 ? 'urgent' : rem < 24 * 3600e3 ? 'day' : 'calm';
+    }
 
-  const PANELS = {
-    topic: (phase) => `
-      <div class="panel wide topic">
-        <img class="sticker topic-sticker" src="assets/blob-lollipop.png" alt="" width="110" height="112">
-        <div>
-          <p class="eyebrow">The assignment</p>
-          ${phase === 'pre' ? `
-            <h3>🔒 TOPIC: ████████████</h3>
-            <p>Classified. Locked. Top secret. It appears right here the moment the clock hits zero.</p>
-            <p class="topic-count">Declassified in <b data-k="topicCd">--</b></p>` : `
-            <h3>🔓 ${TOPIC ? esc(TOPIC) : 'THE TOPIC HAS DROPPED'}</h3>
-            <p>${TOPIC ? 'Now go be gloriously dumb about it.' : 'The topic is being posted on this page. Refresh in a moment.'}</p>`}
+    const hero = $('hero');
+    hero.dataset.mode = cur.mode;
+    hero.classList.toggle('panic', level === 'panic');
+    hero.classList.toggle('warn', level === 'urgent' || level === 'day');
+
+    $('pillText').textContent = pill;
+    $('countLabel').textContent = label;
+    if ($('when').dataset.v !== when) { $('when').innerHTML = when; $('when').dataset.v = when; }
+    $('timer').hidden = cur.mode === 'post';
+    const p = parts(rem);
+    setDigit('dD', pad(p.d));
+    setDigit('dH', pad(p.h));
+    setDigit('dM', pad(p.m));
+    setDigit('dS', pad(p.s));
+    $('stageBar').hidden = cur.mode !== 'live';
+    $('stageFill').style.width = Math.min(100, Math.max(0, pct)) + '%';
+    $('quip').textContent = quip(QUIPS[level], t);
+
+    // compact timer in the top bar (shown once the big one scrolls away) + tab title
+    const mini = cur.mode === 'post' ? 'That\'s a wrap' : `${hms(rem)} · ${cur.mode === 'pre' ? 'Topic' : cur.stage.short}`;
+    $('mini').textContent = mini;
+    document.title = cur.mode === 'post' ? 'Dumb-A-Thon 2026' : `${level === 'panic' ? '🚨' : '⏳'} ${hms(rem)} · Dumb-A-Thon`;
+  }
+
+  /* ---------- 5-dot stage stepper ---------- */
+  function buildSteps() {
+    $('steps').innerHTML = STAGES.map((s) => `<li data-id="${s.id}"><i></i>${s.short}</li>`).join('');
+  }
+  function updateSteps(t) {
+    STAGES.forEach((s) => {
+      const li = $('steps').querySelector(`[data-id="${s.id}"]`);
+      const state = t >= s.end ? 'done' : t >= s.start ? 'live' : '';
+      if (li.className !== state) li.className = state;
+    });
+  }
+
+  /* ---------- topic card ---------- */
+  const SCRAMBLE = 'ABCDEFGHJKLMNPQRSTUVWXYZ#$%&?!*+<>';
+  function renderTopic(phase) {
+    const card = $('topicCard');
+    card.hidden = phase === 'post';
+    if (phase === 'post') return;
+    const locked = phase === 'pre';
+    card.className = `card topic ${locked ? 'locked' : 'open'}`;
+    $('topicBody').innerHTML = locked
+      ? `<p class="eyebrow">🔒 The topic</p>
+         <p class="topic-text" id="scramble" aria-hidden="true">????? ????? ????</p>
+         <p class="muted">It appears right here when the timer hits zero.</p>`
+      : `<p class="eyebrow">🔓 The topic</p>
+         <p class="topic-text">${TOPIC ? esc(TOPIC) : 'The topic has dropped!'}</p>
+         <p class="muted">${TOPIC ? 'Now go be gloriously dumb about it.' : 'It is being posted on this page. Refresh in a moment.'}</p>`;
+  }
+  function startScramble() {
+    if (reducedMotion) return;
+    setInterval(() => {
+      const el = $('scramble');
+      if (!el) return;
+      let s = '';
+      for (let i = 0; i < 16; i++) s += i === 5 || i === 11 ? ' ' : SCRAMBLE[(Math.random() * SCRAMBLE.length) | 0];
+      el.textContent = s;
+    }, 110);
+  }
+
+  /* ---------- the blocks that can appear under the to-do list ---------- */
+  const submitButton = (url, text) => (url ? `<a class="btn alt" href="${esc(url)}" target="_blank" rel="noopener">${text} →</a>` : '');
+
+  const EXTRAS = {
+    format: () => `
+      <div class="box">
+        <h3>📝 Proposal format</h3>
+        <ol class="format">
+          <li><b>Team details</b><span>Founder, Co-Founder 1 and Co-Founder 2 (teams of 3), each with student ID and WhatsApp number</span></li>
+          <li><b>Startup name &amp; tagline</b></li>
+          <li><b>The pain point</b></li>
+          <li><b>The idea</b></li>
+          <li><b>How it works</b></li>
+          <li><b>Who and how it helps</b></li>
+          <li><b>Dumber add-ons</b><span>optional</span></li>
+        </ol>
+        <p class="note">Maximum 2 pages. Do <b>not</b> explain the joke.</p>
+        <div class="actions">
+          <a class="btn" href="assets/Dumbathon_Proposal_Example.pdf" download>📄 Download example (PDF)</a>
+          ${submitButton(SUBMIT_PROPOSAL_URL, 'Submit proposal')}
         </div>
       </div>`,
 
     rule: () => `
-      <div class="panel wide">
-        <p class="eyebrow">The One Rule</p>
-        <p class="rule-text">Imagine you're a Nottingham student who can start <b>any startup</b> or build <b>anything</b> for campus. Come up with the <mark>funniest solution</mark> and present it with <mark>full confidence</mark>. It doesn't have to be realistic, but it has to be <b>creative</b> and <mark>follow the laws of physics</mark>. Every idea must solve a <b>pain point</b>. AI tools are allowed.</p>
-      </div>`,
+      <details class="box">
+        <summary>🪿 The One Rule</summary>
+        <p class="reveal">Imagine you're a Nottingham student who can start <b>any startup</b> or build <b>anything</b> for campus. Come up with the <b>funniest solution</b> and present it with <b>full confidence</b>. It doesn't have to be realistic, but it has to be creative and follow the laws of physics. Every idea must solve a pain point. AI tools are allowed.</p>
+      </details>`,
 
-    inspo: () => `
-      <div class="panel">
-        <details class="inspo">
-          <summary>💡 Need inspo? Example: <b>Gilbert Remote</b></summary>
-          <dl>
-            <dt>Pain point</dt><dd>Gilbert goes wherever he wants, and students have no way to control what he does.</dd>
-            <dt>The idea</dt><dd>A digital remote controller for Gilbert, our unofficial mascot goose.</dd>
-            <dt>How it works</dt><dd>Open the app, pick a button, press it. Honk. Waddle. Wave at the lake. Gilbert may or may not respond.</dd>
-            <dt>Who it helps</dt><dd>Everyone on campus. Humans and Gilbert get to interact, which creates harmony, and a harmonious campus is a prosperous university.</dd>
-            <dt>Dumber add-ons</dt><dd><b>Gilbert Premium:</b> same buttons, but Gilbert ignores you faster. <b>Honk Meter.</b> <b>Exam Week Mode:</b> Gilbert becomes your emotional support goose.</dd>
-          </dl>
-        </details>
+    links: () => `
+      <div class="box">
+        <h3>📦 What to submit: three links</h3>
+        <ul class="links">
+          <li><i>🐙</i><div><b>GitHub repo link</b><span>Your project's files, set to Public.</span></div></li>
+          <li><i>🧪</i><div><b>Prototype link</b><span>A hosted site, or any other kind of prototype. Hosting is not required.</span></div></li>
+          <li><i>🖥️</i><div><b>Slides link</b><span>A link only. Slide files are not accepted.</span></div></li>
+        </ul>
+        <p class="note">This hackathon is about using AI well, not coding well.</p>
+        <div class="actions">
+          <a class="btn" href="guide.html">📘 Never used GitHub? Start here</a>
+          ${submitButton(SUBMIT_FINAL_URL, 'Submit links')}
+        </div>
       </div>`,
 
     judging: () => `
-      <div class="panel">
-        <p class="eyebrow">How you'll be judged <small>(finals)</small></p>
-        <div class="crit" id="criteria"></div>
-      </div>`,
+      <details class="box">
+        <summary>⚖️ How you'll be judged (finals)</summary>
+        <div class="crit">
+          ${CRITERIA.map((c) => `
+            <div>
+              <p class="crit-top"><b>${c.name}</b><span>${c.w}%</span></p>
+              <div class="crit-bar"><i style="--w:${c.w * 3}%"></i></div>
+              <p class="muted small">${c.d}</p>
+            </div>`).join('')}
+        </div>
+      </details>`,
 
     itinerary: () => `
-      <div class="panel wide itin">
-        <h4>Pitch night run sheet</h4>
-        <ol>
-          ${stageById('pitch').itinerary.map((it, j) => `<li data-it="${j}"><time>${it.t}</time><span>${it.a}${it.d ? `<small>${it.d}</small>` : ''}</span></li>`).join('')}
+      <div class="box">
+        <h3>🎤 Run sheet</h3>
+        <p class="muted small">Venue: F1A15</p>
+        <ol class="itin">
+          ${ITINERARY.map((it, j) => `<li data-it="${j}"><time>${it.t}</time><span>${it.what}</span></li>`).join('')}
         </ol>
       </div>`,
 
     goose: () => `
-      <div class="panel">
-        <button class="goose" type="button" aria-label="Honk the goose">
-          <img src="assets/goose-poster.png" alt="A goose typing at a computer, with a lightbulb above its head" width="411" height="300">
-          <span class="goose-tag">click to HONK</span>
-        </button>
-      </div>`,
+      <button class="goose" type="button" aria-label="Honk the goose">
+        <img src="assets/goose-poster.png" alt="A goose typing at a computer, with a lightbulb above its head" width="411" height="300">
+        <span>click to HONK</span>
+      </button>`,
   };
 
-  function renderNow(phase) {
+  /* ---------- the to-do card: current stage only ---------- */
+  function renderTodo(phase) {
     const st = stageById(phase);
-    const P = PHASES[phase];
-    const title = st ? st.name : P.title;
-    const tag = st ? st.tag : P.tag;
-    const tasks = st ? st.tasks : P.tasks;
-    const kind = phase === 'pre' ? 'pre' : phase === 'post' ? 'post' : 'live';
-    const badge = { pre: '<span class="badge idle">GET READY</span>', post: '<span class="badge done">FINISHED</span>', live: '<span class="badge live">RIGHT NOW</span>' }[kind];
-    const when = st
-      ? `<div class="when"><span>🟢 <b>${st.startLabel}</b></span><span class="deadline">⏰ ${st.deadline}: <b>${st.endLabel}</b></span><span class="who">👥 ${st.who}</span></div>`
-      : phase === 'pre' ? `<div class="when"><span>🟢 Opens <b>${first.startLabel}</b> (MYT)</span></div>` : '';
-    const taskList = tasks.length ? `
-      <ul class="tasks">
-        ${tasks.map((t, j) => {
-          const key = `dumbathon26:${phase}:${j}`;
-          return `<li><label><input type="checkbox" data-key="${key}" ${store.get(key) === '1' ? 'checked' : ''}><span>${t}</span></label></li>`;
-        }).join('')}
-      </ul>
-      <p class="save-note">Ticks are saved in this browser only.</p>` : '';
-    const panels = P.panels.length ? `<div class="panels">${P.panels.map((k) => PANELS[k](phase)).join('')}</div>` : '';
+    const P = st || OUTSIDE[phase];
+    const eyebrow = st ? `What to do now · ${st.who}` : phase === 'pre' ? 'Before it starts' : 'Done and dusted';
+    const tasks = P.tasks.map((t, j) => {
+      const key = `dumbathon26:v2:${phase}:${j}`;
+      return `<li><label><input type="checkbox" data-key="${key}" ${store.get(key) === '1' ? 'checked' : ''}><span>${t}</span></label></li>`;
+    }).join('');
 
-    $('nowCard').innerHTML = `
-      <article class="card now-card is-${kind}">
-        <div class="now-head">${badge}<h2>${title}</h2><p class="stage-tag">${tag}</p></div>
-        ${when}
-        ${taskList}
-        ${panels}
+    $('todo').innerHTML = `
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <p class="eyebrow">${eyebrow}</p>
+            <h2>${P.name}</h2>
+            <p class="muted">${P.tag}</p>
+          </div>
+          ${tasks ? '<div class="progress"><b id="doneCount"></b><div class="meter"><i id="doneFill"></i></div></div>' : ''}
+        </div>
+        ${tasks ? `<ul class="tasks">${tasks}</ul>` : ''}
+        ${P.extras.map((k) => EXTRAS[k]()).join('')}
         <p class="upnext" id="upNext" hidden></p>
-      </article>`;
-    if (P.panels.includes('judging')) buildCriteria();
+      </div>`;
+    updateProgress();
   }
 
-  /* ---------- timeline strip (names and dates only, no details) ---------- */
-  function buildTrack() {
-    $('track').innerHTML = STAGES.map((s, i) => `
-      <li class="trk" data-id="${s.id}">
-        <span class="n">${i + 1}</span><b>${s.short}</b><small>${s.startLabel}</small><em data-k="st"></em>
-      </li>`).join('');
-    $('nowCard').addEventListener('change', (e) => {
-      const cb = e.target;
-      if (cb.matches && cb.matches('.tasks input')) store.set(cb.dataset.key, cb.checked ? '1' : '0');
+  function updateProgress(celebrate) {
+    const boxes = [...$('todo').querySelectorAll('.tasks input')];
+    if (!boxes.length) return;
+    const done = boxes.filter((b) => b.checked).length;
+    const all = done === boxes.length;
+    $('doneCount').textContent = all ? 'All done 🎉' : `${done}/${boxes.length} done`;
+    $('doneFill').style.width = (done / boxes.length) * 100 + '%';
+    if (all && celebrate && !reducedMotion) {
+      const box = document.createElement('div');
+      box.className = 'confetti fixed';
+      document.body.appendChild(box);
+      spawnConfetti(box, 60);
+      setTimeout(() => box.remove(), 4200);
+    }
+  }
+
+  /* things inside the cards that change every tick */
+  function updateLive(t, cur) {
+    const up = $('upNext');
+    if (up) {
+      const next = cur.mode === 'live' ? STAGES[cur.i + 1] : null;
+      up.hidden = !next;
+      if (next) up.innerHTML = `Next: <b>${next.name}</b> · ${next.startLabel}`;
+    }
+    ITINERARY.forEach((it, j) => {
+      const li = document.querySelector(`#todo [data-it="${j}"]`);
+      if (!li) return;
+      li.classList.toggle('now', t >= it.s && t < it.e);
+      li.classList.toggle('past', t >= it.e);
     });
   }
 
-  function updateTrack(t, cur) {
-    STAGES.forEach((s, i) => {
-      const li = $('track').querySelector(`[data-id="${s.id}"]`);
-      const state = t < s.start ? 'upcoming' : t < s.end ? 'live' : 'done';
-      const isNext = state === 'upcoming' && (cur.mode === 'pre' ? i === 0 : i === cur.i + 1);
-      li.className = 'trk' + (state === 'live' ? ' live' : state === 'done' ? ' done' : isNext ? ' next' : '');
-      li.querySelector('[data-k=st]').textContent = state === 'live' ? 'LIVE' : state === 'done' ? 'DONE ✓' : isNext ? 'NEXT' : 'LOCKED';
-    });
-  }
-
-  /* ---------- timetable: the whole flow, always visible (dates only, no tasks) ---------- */
+  /* ---------- timetable: the whole flow (dates only) ---------- */
   const TIMETABLE = [
-    { date: 'Mon 30 Nov', time: '18:00', what: 'Opening. The topic drops on this page and brainstorming starts.', doneAt: first.start },
+    { date: 'Mon 30 Nov', time: '18:00', what: 'Topic drops here. Brainstorming starts.', doneAt: first.start },
     { date: 'Tue 1 Dec', time: 'all day', what: 'Confirm your idea.', doneAt: at('2026-12-01T23:59:59') },
     { date: 'Wed 2 Dec', time: '23:59', what: 'Proposal report due.', doneAt: stageById('brainstorm').end },
     { date: 'Thu 3 Dec', time: '18:00', what: 'Shortlist announced by email. Building starts.', doneAt: stageById('shortlist').end },
-    { date: 'Mon 7 Dec', time: '23:59', what: 'GitHub link, Vercel link and slides due.', doneAt: stageById('build').end },
-    { date: 'Tue 8 Dec', time: '17:00 – 19:30', what: 'Pitch night at F1A15: pitching, judging and prizes.', startAt: stageById('pitch').start, doneAt: last.end },
+    { date: 'Mon 7 Dec', time: '23:59', what: 'GitHub, prototype and slides links due.', doneAt: stageById('build').end },
+    { date: 'Tue 8 Dec', time: '17:00', what: 'Pitch night at F1A15, until 19:30.', startAt: stageById('pitch').start, doneAt: last.end },
   ];
 
   function buildTimetable() {
     $('ttList').innerHTML = TIMETABLE.map((r) => `
-      <li><time>${r.date}<span>${r.time}</span></time><p>${r.what}</p><em></em></li>`).join('');
+      <li><i></i><time>${r.date}<small>${r.time}</small></time><div><p>${r.what}</p><em></em></div></li>`).join('');
   }
 
   function updateTimetable(t) {
@@ -427,132 +465,15 @@
       const past = t >= r.doneAt;
       const isNext = i === nextIndex;
       li.className = past ? 'past' : isNext ? 'next' : '';
-      li.querySelector('em').textContent = past ? 'DONE ✓' : isNext ? (r.startAt && t >= r.startAt ? 'NOW' : 'NEXT') : '';
+      li.querySelector('em').textContent = isNext ? (r.startAt && t >= r.startAt ? 'HAPPENING NOW' : 'NEXT UP') : '';
     });
   }
 
-  /* things inside the "right now" card that change every tick */
-  function updateNow(t, cur) {
-    const up = $('upNext');
-    if (up) {
-      if (cur.mode === 'live') {
-        const next = STAGES[cur.i + 1];
-        up.hidden = false;
-        up.innerHTML = next
-          ? `🔜 <b>Up next: ${next.name}</b>, starts ${next.startLabel} (in <b>${hms(next.start - t)}</b>). Its tasks stay hidden until then.`
-          : '🏁 That\'s the last stage. After this: go touch grass.';
-      } else {
-        up.hidden = true;
-      }
-    }
-    const cd = document.querySelector('[data-k=topicCd]');
-    if (cd) cd.textContent = hms(first.start - t);
-    stageById('pitch').itinerary.forEach((it, j) => {
-      const li = document.querySelector(`#nowCard [data-it="${j}"]`);
-      if (!li) return;
-      li.classList.toggle('now', t >= it.s && t < it.e);
-      li.classList.toggle('past', t >= it.e);
-    });
-  }
-
-  /* ---------- per-tick updates ---------- */
-  function currentStage(t) {
-    if (t < first.start) return { mode: 'pre' };
-    if (t >= last.end) return { mode: 'post' };
-    const i = STAGES.findIndex((s) => t >= s.start && t < s.end);
-    return { mode: 'live', i, stage: STAGES[i] };
-  }
-
-  function setDigits(ms) {
-    const p = parts(ms);
-    $('dD').textContent = pad(p.d);
-    $('dH').textContent = pad(p.h);
-    $('dM').textContent = pad(p.m);
-    $('dS').textContent = pad(p.s);
-    $('heroTotal').textContent = `= ${plural(p.totalH, 'hour')} ${plural(p.m, 'minute')} ${plural(p.s, 'second')} left`;
-  }
-
-  function updateHero(t, cur) {
-    const panel = $('panel');
-    const badge = $('heroBadge');
-    let rem = 0, pct = 0, level = 'calm';
-
-    if (cur.mode === 'pre') {
-      rem = first.start - t;
-      badge.textContent = 'PRE-GAME'; badge.className = 'badge idle';
-      $('heroStep').textContent = 'Not started yet';
-      $('heroTitle').textContent = 'Topic drops in…';
-      $('heroTarget').textContent = `Opening & assignment: ${first.startLabel} (MYT)`;
-      level = 'pre';
-    } else if (cur.mode === 'post') {
-      badge.textContent = 'FINISHED'; badge.className = 'badge done';
-      $('heroStep').textContent = 'All stages complete';
-      $('heroTitle').textContent = 'It\'s over. Go touch grass.';
-      $('heroTarget').textContent = 'Dumb-A-Thon 2026 · 30 Nov to 8 Dec';
-      level = 'post';
-      pct = 100;
-    } else {
-      const s = cur.stage;
-      rem = s.end - t;
-      pct = ((t - s.start) / (s.end - s.start)) * 100;
-      badge.textContent = 'LIVE NOW'; badge.className = 'badge live';
-      $('heroStep').textContent = `Stage ${cur.i + 1} of ${STAGES.length}`;
-      $('heroTitle').textContent = s.name;
-      $('heroTarget').textContent = `${s.deadline}: ${s.endLabel} (MYT)`;
-      if (s.id === 'shortlist') level = 'wait';
-      else if (s.id === 'prep') level = 'prep';
-      else if (s.id === 'pitch') level = 'live';
-      else level = rem < 3600e3 ? 'panic' : rem < 6 * 3600e3 ? 'urgent' : rem < 24 * 3600e3 ? 'day' : 'calm';
-    }
-
-    setDigits(rem);
-    const panic = level === 'panic';
-    panel.classList.toggle('panic', panic);
-    panel.classList.toggle('warn', level === 'urgent' || level === 'day');
-    $('winTitle').textContent = panic ? 'countdown.exe (Not Responding)' : 'countdown.exe';
-    $('heroQuip').textContent = quip(QUIPS[level], t);
-    $('heroBar').style.width = Math.min(100, Math.max(0, pct)) + '%';
-    panel.querySelector('.bar').style.display = cur.mode === 'pre' ? 'none' : '';
-
-    const mini = $('miniStatus');
-    mini.classList.toggle('panic', panic);
-    mini.classList.toggle('idle', cur.mode !== 'live');
-    let miniText, title;
-    if (cur.mode === 'pre') { miniText = `Topic drops in ${hms(rem)}`; title = `⏳ ${hms(rem)} to topic drop`; }
-    else if (cur.mode === 'post') { miniText = 'Dumb-A-Thon 2026 is over. Go touch grass.'; title = 'Dumb-A-Thon 2026'; }
-    else { miniText = `${cur.stage.name}: ${hms(rem)} left`; title = `${panic ? '🚨' : '⏳'} ${hms(rem)} · ${cur.stage.name}`; }
-    $('miniText').textContent = miniText;
-    document.title = `${title} | Dumb-A-Thon`;
-  }
-
-  /* ---------- the 10-second topic drop countdown (full-screen) ---------- */
-  const DROP_QUIPS = {
-    10: 'Hands off the keyboard.', 9: 'Stretch your fingers.', 8: 'Drink some water.', 7: 'Hide your plans from the other teams.',
-    6: 'Gilbert is watching.', 5: 'Lower your standards.', 4: 'Find your team. Fast.', 3: 'Brain cells: ready.', 2: 'Be confident.', 1: 'HONK.',
-  };
+  /* ---------- confetti (topic drop + finished to-do list) ---------- */
   const CONFETTI = ['#ff8fdc', '#3ee6c8', '#ffd25e', '#7a4dff', '#ff9b3d', '#fbf8ff'];
-  let prevT = null, lastDropN = 0, dropDismissed = false, burstUntil = 0;
-
-  function beep(freq, dur = 0.09) {
-    try {
-      const AC = window.AudioContext || window.webkitAudioContext;
-      honk.ac = honk.ac || new AC();
-      const ac = honk.ac;
-      if (ac.state === 'suspended') ac.resume().catch(() => {});
-      const o = ac.createOscillator(), g = ac.createGain(), t0 = ac.currentTime;
-      o.type = 'square'; o.frequency.value = freq;
-      g.gain.setValueAtTime(0.0001, t0);
-      g.gain.exponentialRampToValueAtTime(0.12, t0 + 0.01);
-      g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
-      o.connect(g); g.connect(ac.destination);
-      o.start(t0); o.stop(t0 + dur + 0.02);
-    } catch { /* audio blocked until the visitor interacts: the visuals still run */ }
-  }
-
-  function spawnConfetti() {
-    const box = $('confetti');
+  function spawnConfetti(box, count) {
     box.innerHTML = '';
-    for (let i = 0; i < 70; i++) {
+    for (let i = 0; i < count; i++) {
       const c = document.createElement('i');
       c.style.left = Math.random() * 100 + '%';
       c.style.background = CONFETTI[i % CONFETTI.length];
@@ -562,6 +483,33 @@
       box.appendChild(c);
     }
   }
+
+  /* ---------- the 10-second topic drop countdown (full-screen) ---------- */
+  const DROP_QUIPS = {
+    10: 'Hands off the keyboard.', 9: 'Stretch your fingers.', 8: 'Drink some water.', 7: 'Hide your plans from the other teams.',
+    6: 'Gilbert is watching.', 5: 'Lower your standards.', 4: 'Find your team. Fast.', 3: 'Brain cells: ready.', 2: 'Be confident.', 1: 'HONK.',
+  };
+  let prevT = null, lastDropN = 0, dropDismissed = false, burstUntil = 0;
+
+  function audio() {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    audio.ctx = audio.ctx || new AC();
+    if (audio.ctx.state === 'suspended') audio.ctx.resume().catch(() => {});
+    return audio.ctx;
+  }
+  function beep(freq, dur = 0.09) {
+    try {
+      const ac = audio();
+      const o = ac.createOscillator(), g = ac.createGain(), t0 = ac.currentTime;
+      o.type = 'square'; o.frequency.value = freq;
+      g.gain.setValueAtTime(0.0001, t0);
+      g.gain.exponentialRampToValueAtTime(0.12, t0 + 0.01);
+      g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+      o.connect(g); g.connect(ac.destination);
+      o.start(t0); o.stop(t0 + dur + 0.02);
+    } catch { /* audio blocked until the visitor interacts: the visuals still run */ }
+  }
+  const popNumber = () => { const n = $('dropNum'); n.classList.remove('pop'); void n.offsetWidth; n.classList.add('pop'); };
 
   function updateDrop(t) {
     const el = $('drop');
@@ -579,8 +527,8 @@
       $('dropLabel').textContent = 'TOPIC';
       $('dropNum').textContent = 'DROPPED!';
       $('dropQuip').textContent = 'Go go go. Be gloriously dumb.';
-      $('dropNum').classList.remove('pop'); void $('dropNum').offsetWidth; $('dropNum').classList.add('pop');
-      spawnConfetti();
+      popNumber();
+      spawnConfetti($('confetti'), 70);
       beep(660, 0.12); setTimeout(() => beep(880, 0.12), 120); setTimeout(() => beep(1320, 0.25), 240);
       el.hidden = false;
       return;
@@ -596,7 +544,7 @@
         $('dropNum').textContent = n;
         $('dropQuip').textContent = DROP_QUIPS[n];
         el.classList.toggle('final', n <= 3);
-        $('dropNum').classList.remove('pop'); void $('dropNum').offsetWidth; $('dropNum').classList.add('pop');
+        popNumber();
         beep(n <= 3 ? 880 : 520);
       }
       el.hidden = false;
@@ -625,14 +573,13 @@
     devOpen = open;
     $('devPanel').hidden = !open;
     refreshDev(true);
-    updateBanner();
+    tick();
   }
   function updateBanner() {
     $('simBanner').hidden = !sim || devOpen;
   }
   function refreshDev(syncInput) {
     $('devMode').textContent = !sim ? 'REAL TIME' : sim.paused ? 'SIM · PAUSED' : sim.speed > 1 ? `SIM · ${sim.speed}×` : 'SIMULATED';
-    $('devMode').className = sim ? 'sim' : '';
     $('devPlay').textContent = sim && sim.paused ? '▶' : '⏸';
     $('devSpeed').value = String(sim ? sim.speed : 1);
     if (syncInput) $('devInput').value = toInputValue(now());
@@ -664,7 +611,7 @@
     document.addEventListener('keydown', (e) => {
       if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'd') { e.preventDefault(); openDev(!devOpen); }
     });
-    if (params.has('dev')) openDev(true);
+    if (params.has('dev')) { devOpen = true; $('devPanel').hidden = false; }
     refreshDev(true);
   }
 
@@ -676,19 +623,15 @@
     const t = now();
     const cur = currentStage(t);
     const phase = cur.mode === 'live' ? cur.stage.id : cur.mode;
-    $('clock').textContent = mytClock.format(new Date(t));
     updateHero(t, cur);
-    updateTrack(t, cur);
-    if (phase !== shownPhase) { shownPhase = phase; renderNow(phase); }
-    updateNow(t, cur);
+    updateSteps(t);
+    if (phase !== shownPhase) { shownPhase = phase; renderTopic(phase); renderTodo(phase); }
+    updateLive(t, cur);
     updateTimetable(t);
     updateDrop(t);
-    if (sim) {
-      $('simBannerTime').textContent = mytFull.format(new Date(t));
-      if (devOpen) $('devNow').textContent = mytFull.format(new Date(t));
-    } else if (devOpen) {
-      $('devNow').textContent = mytFull.format(new Date(t));
-    }
+    $('clock').textContent = mytClock.format(new Date(t));
+    if (sim) $('simBannerTime').textContent = mytFull.format(new Date(t));
+    if (devOpen) $('devNow').textContent = mytFull.format(new Date(t));
     // fast clock needs faster redraws; real time ticks on the second boundary
     const fast = sim && !sim.paused && sim.speed > 1;
     const delay = fast ? 150 : sim && sim.paused ? 500 : 1000 - (Date.now() % 1000) + 5;
@@ -701,9 +644,7 @@
     honks++;
     $('honkCount').textContent = honks;
     try {
-      const AC = window.AudioContext || window.webkitAudioContext;
-      honk.ac = honk.ac || new AC();
-      const ac = honk.ac;
+      const ac = audio();
       const t0 = ac.currentTime;
       [0, 0.17].forEach((dt, i) => {
         const o = ac.createOscillator(), g = ac.createGain(), f = ac.createBiquadFilter();
@@ -727,27 +668,33 @@
     setTimeout(() => pop.remove(), 950);
   }
 
-  function wireHonk() {
-    $('honkBtn').addEventListener('click', (e) => {
-      const r = e.currentTarget.getBoundingClientRect();
+  function wireUp() {
+    // the goose and the checkboxes live inside cards that get re-rendered, so delegate
+    document.addEventListener('click', (e) => {
+      const target = e.target.closest && e.target.closest('.goose, #honkBtn');
+      if (!target) return;
+      const r = target.getBoundingClientRect();
       honk(e.clientX || r.left + r.width / 2, e.clientY || r.top);
     });
-    // the goose lives inside the "right now" card, which gets re-rendered, so listen on the document
-    document.addEventListener('click', (e) => {
-      if (e.target.closest && e.target.closest('.goose')) honk(e.clientX, e.clientY);
+    $('todo').addEventListener('change', (e) => {
+      const cb = e.target;
+      if (!cb.matches('.tasks input')) return;
+      store.set(cb.dataset.key, cb.checked ? '1' : '0');
+      updateProgress(cb.checked);
     });
+    $('drop').addEventListener('click', () => { dropDismissed = true; burstUntil = 0; $('drop').hidden = true; });
+    // once the big countdown scrolls away, show the small one in the top bar
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(([entry]) => {
+        $('topbar').classList.toggle('scrolled', !entry.isIntersecting && entry.boundingClientRect.top < 100);
+      }, { rootMargin: '-56px 0px 0px 0px' }).observe($('countdown'));
+    }
   }
 
-  $('drop').addEventListener('click', () => { dropDismissed = true; burstUntil = 0; $('drop').hidden = true; });
-  buildBackdrop();
-  buildTrack();
+  buildSteps();
   buildTimetable();
-  wireHonk();
+  wireUp();
   wireDev();
   tick();
-  // sections are built by JS, so honour a #hash (e.g. #stage-build) once they exist
-  if (location.hash.length > 1) {
-    const target = document.getElementById(decodeURIComponent(location.hash.slice(1)));
-    if (target) target.scrollIntoView();
-  }
+  startScramble();
 })();

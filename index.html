@@ -4,118 +4,92 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Dumb-A-Thon 2026 | Live Tracker</title>
-<meta name="description" content="The official Dumb-A-Thon 2026 tracker: live countdowns and only the info you need right now. 30 Nov to 8 Dec 2026. RM700 prize pool.">
-<meta name="theme-color" content="#121215">
+<meta name="description" content="Dumb-A-Thon 2026 live tracker: the countdown, the topic and what to do right now. 30 Nov to 8 Dec 2026. RM700 in vouchers.">
+<meta name="theme-color" content="#101014">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%AA%BF%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800&family=Pixelify+Sans:wght@400..700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="code-bg" id="codeBg" aria-hidden="true"></div>
-
-<div class="ticker" aria-hidden="true"><div class="ticker-track" id="tickerTrack"></div></div>
-
-<header class="topbar">
-  <div class="wrap">
-    <a class="brand" href="#top">Dumb<b>-A-</b>Thon</a>
-    <div class="mini-status" id="miniStatus" aria-live="off">
-      <span class="dot"></span>
-      <span class="mini-text" id="miniText">Loading brain cells…</span>
+<header class="topbar" id="topbar">
+  <div class="bar-inner">
+    <div class="brand-slot">
+      <a class="brand" href="#top">Dumb<b>-A-</b>Thon</a>
+      <a class="mini" id="mini" href="#top" tabindex="-1"></a>
     </div>
     <nav class="nav" aria-label="Sections">
       <a href="#timetable">Timetable</a>
       <a href="#prizes">Prizes</a>
+      <a href="guide.html">Guide</a>
     </nav>
   </div>
 </header>
 
-<main id="top">
+<main class="wrap" id="top">
 
-  <!-- HERO: logo + the live countdown -->
-  <section class="wrap hero">
-    <div class="hero-copy">
-      <div class="logo"><img src="assets/logo.png" alt="Dumb-A-Thon" width="855" height="318" onerror="this.parentNode.classList.add('fallback');this.remove()"></div>
-      <p class="tagline">A judgment-free hackathon where the <mark>dumber (but smart)</mark> the idea, the better. Build your silliest startup. Pitch it with <mark>full confidence</mark>.</p>
-      <ul class="chips">
-        <li>📅 30 Nov → 8 Dec 2026</li>
-        <li>👥 Teams of 2–3, no solo</li>
-        <li>💸 RM700 in vouchers</li>
-        <li>🤖 AI tools allowed</li>
-      </ul>
-      <p class="tz">All times are Malaysia time (MYT, UTC+8). Right now it's <b id="clock">--:--:--</b> in Malaysia.</p>
-    </div>
+  <!-- HERO: small logo, then the countdown in the middle -->
+  <section class="hero" id="hero" data-mode="pre">
+    <div class="bits" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
 
-    <div class="hero-panel">
-      <img class="sticker hero-sticker" src="assets/blob-grin.png" alt="" width="96" height="95">
-      <div class="win" id="panel" role="timer" aria-label="Countdown to the next deadline">
-        <div class="win-bar"><i></i><i></i><i></i><span id="winTitle">countdown.exe</span></div>
-        <div class="win-body">
-          <div class="panel-top">
-            <span class="badge live" id="heroBadge">LIVE NOW</span>
-            <span class="panel-step" id="heroStep">Stage 1 of 5</span>
-          </div>
-          <h2 class="panel-title" id="heroTitle">Brainstorm &amp; Proposal</h2>
-          <p class="panel-target" id="heroTarget">Proposal report due Wed 2 Dec · 23:59</p>
+    <h1 class="logo">
+      <img src="assets/logo.png" alt="Dumb-A-Thon" onerror="this.parentNode.classList.add('text');this.remove()">
+      <span class="wordmark">Dumb<em>-</em><span class="a">A</span><em>-</em>Thon</span>
+    </h1>
+    <p class="tagline">The <b>dumber (but smart)</b> the idea, the better.</p>
+    <p class="facts">30 Nov – 8 Dec · Teams of 2–3 · AI tools allowed</p>
 
-          <div class="digits">
-            <div class="digit"><b id="dD">00</b><span>days</span></div>
-            <div class="digit"><b id="dH">00</b><span>hrs</span></div>
-            <div class="digit"><b id="dM">00</b><span>mins</span></div>
-            <div class="digit"><b id="dS">00</b><span>secs</span></div>
-          </div>
-          <p class="total" id="heroTotal">= 0 hours 0 minutes left</p>
-
-          <div class="bar" aria-hidden="true"><i id="heroBar"></i></div>
-          <p class="quip" id="heroQuip">…</p>
-        </div>
+    <div class="countdown" id="countdown">
+      <img class="mascot" src="assets/blob-grin.png" alt="">
+      <p class="pill"><i></i><span id="pillText">Loading…</span></p>
+      <h2 class="count-label" id="countLabel">Loading brain cells…</h2>
+      <div class="timer" id="timer" role="timer">
+        <div class="unit"><b id="dD">00</b><span>days</span></div>
+        <div class="unit"><b id="dH">00</b><span>hrs</span></div>
+        <div class="unit"><b id="dM">00</b><span>mins</span></div>
+        <div class="unit"><b id="dS">00</b><span>secs</span></div>
       </div>
+      <p class="when" id="when"></p>
+      <div class="stagebar" id="stageBar" hidden aria-hidden="true"><i id="stageFill"></i></div>
+      <p class="quip" id="quip"></p>
     </div>
+
+    <ol class="steps" id="steps" aria-label="Stages"></ol>
   </section>
 
-  <!-- TIMELINE: one line per stage, no details -->
-  <section class="wrap" aria-label="Timeline">
-    <ol class="track" id="track"></ol>
+  <!-- THE TOPIC -->
+  <section class="card topic locked" id="topicCard" aria-live="polite">
+    <img class="sticker" src="assets/blob-lollipop.png" alt="">
+    <div id="topicBody"></div>
   </section>
 
-  <!-- RIGHT NOW: only what applies to the current stage is rendered here -->
-  <section class="wrap" id="now" aria-live="polite">
-    <div id="nowCard"></div>
+  <!-- WHAT TO DO NOW: only the current stage is rendered here -->
+  <section id="todo" aria-label="What to do now"></section>
+
+  <section class="card" id="timetable">
+    <h2>📅 Timetable</h2>
+    <ol class="tt" id="ttList"></ol>
+    <p class="muted small">All times are Malaysia time. It's <b id="clock">--:--:--</b> there now.</p>
   </section>
 
-  <!-- TIMETABLE: the whole flow -->
-  <section class="wrap" id="timetable">
-    <h2 class="sec-title">📅 Timetable</h2>
-    <div class="card">
-      <ol class="tt" id="ttList"></ol>
-      <p class="tt-note">All times are Malaysia time (MYT).</p>
+  <section class="card prizes" id="prizes">
+    <h2>🏆 Prizes</h2>
+    <div class="podium" role="img" aria-label="Prizes: 1st RM400, 2nd RM200, 3rd RM100">
+      <div class="pod p2"><span>2nd</span><b>RM200</b></div>
+      <div class="pod p1"><span>1st</span><b>RM400</b></div>
+      <div class="pod p3"><span>3rd</span><b>RM100</b></div>
     </div>
-  </section>
-
-  <!-- PRIZES -->
-  <section class="wrap" id="prizes">
-    <h2 class="sec-title">🏆 Prizes</h2>
-    <div class="card prize-card">
-      <div class="podium" role="img" aria-label="Prizes: 1st RM400, 2nd RM200, 3rd RM100">
-        <div class="pod p2"><span>2nd</span><b>RM200</b></div>
-        <div class="pod p1"><span>1st</span><b>RM400</b></div>
-        <div class="pod p3"><span>3rd</span><b>RM100</b></div>
-      </div>
-      <p class="total-prize">Total prize pool: <b>RM700</b>. One track, three places.</p>
-      <p class="callout">🎟️ Prizes are given as <b>GrabPay or ShopeePay vouchers</b>.</p>
-    </div>
+    <p>RM700 in total, given as <b>GrabPay or ShopeePay vouchers</b>.</p>
   </section>
 </main>
 
 <footer class="footer">
   <div class="wrap">
     <div class="partners" role="img" aria-label="University of Nottingham Malaysia, Engineers Without Borders, Computer Science Society, Institution of Engineers Malaysia, Students' Association"></div>
-    <p class="foot-line">Hosted by the Computer Science Society, Engineers Without Borders and the Institution of Engineers, Malaysia · University of Nottingham Malaysia</p>
-    <div class="foot-tools">
-      <button class="btn" id="honkBtn" type="button">🪿 HONK <span id="honkCount">0</span></button>
-    </div>
+    <p class="muted small">Hosted by the Computer Science Society, Engineers Without Borders and the Institution of Engineers, Malaysia · University of Nottingham Malaysia</p>
+    <button class="btn" id="honkBtn" type="button">🪿 HONK <span id="honkCount">0</span></button>
     <p class="muted small">Schedule is tentative and may change. Organisers will confirm updates in the WhatsApp group.</p>
   </div>
 </footer>

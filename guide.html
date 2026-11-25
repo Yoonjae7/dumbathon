@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GitHub Guide | Dumb-A-Thon</title>
+<meta name="description" content="No coding needed: how to put your Dumb-A-Thon project on GitHub, get a prototype link and share your slides.">
+<meta name="theme-color" content="#101014">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%AA%BF%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800&family=Pixelify+Sans:wght@400..700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="guide">
+
+<header class="topbar">
+  <div class="bar-inner">
+    <div class="brand-slot"><a class="brand" href="index.html">Dumb<b>-A-</b>Thon</a></div>
+    <nav class="nav" aria-label="Back"><a href="index.html">← Back to the tracker</a></nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <h1>Put it on GitHub</h1>
+  <p class="lead">No coding needed. Dumb-A-Thon is about using AI well, not coding well.</p>
+
+  <section class="card">
+    <h2>📦 You submit three links</h2>
+    <ul class="links">
+      <li><i>🐙</i><div><b>GitHub repo link</b><span>Your project's files, set to Public.</span></div></li>
+      <li><i>🧪</i><div><b>Prototype link</b><span>A hosted website, or any other kind of prototype. Hosting is not required.</span></div></li>
+      <li><i>🖥️</i><div><b>Slides link</b><span>A link only. Slide files are not accepted.</span></div></li>
+    </ul>
+    <p class="note">Due Monday 7 December, 23:59 (Malaysia time).</p>
+  </section>
+
+  <section class="card">
+    <h2>🤖 First, get AI to build it</h2>
+    <p>Making a website? Copy this into your AI tool and fill in the brackets.</p>
+    <pre class="prompt" id="prompt">Build a simple one-page website prototype for my campus startup.
+Name: [your startup name]
+Problem: [the pain point]
+Idea: [what it does]
+Make it funny but easy to use, and make it work on phones.
+Put all the HTML, CSS and JavaScript in ONE file called index.html.
+Then tell me, step by step, how to test it.</pre>
+    <button class="btn" type="button" id="copy">📋 Copy prompt</button>
+  </section>
+
+  <section class="card">
+    <h2>🐙 Then put it on GitHub</h2>
+
+    <div class="step">
+      <span class="n">1</span>
+      <div>
+        <h3>Make a free account</h3>
+        <p>Go to <a href="https://github.com" target="_blank" rel="noopener">github.com</a> and sign up. One account per team is enough.</p>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="n">2</span>
+      <div>
+        <h3>Create a repository (your project folder)</h3>
+        <ol>
+          <li>Click <span class="ui">+</span> at the top right, then <span class="ui">New repository</span>.</li>
+          <li>Type a name, like <code>gilbert-remote</code>.</li>
+          <li>Set visibility to <span class="ui">Public</span>.</li>
+          <li>Turn <span class="ui">Add README</span> on.</li>
+          <li>Click <span class="ui">Create repository</span>.</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="n">3</span>
+      <div>
+        <h3>Upload your files</h3>
+        <ol>
+          <li>On your repository page, click <span class="ui">Add file</span>, then <span class="ui">Upload files</span>.</li>
+          <li>Drag your files into the box.</li>
+          <li>Click <span class="ui">Commit changes</span> (it may say <span class="ui">Propose changes</span>).</li>
+        </ol>
+        <p class="tip">Website? The main file must be named <b>index.html</b> and must not be inside a folder.</p>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="n">4</span>
+      <div>
+        <h3>Switch on free hosting <span class="muted small">(websites only)</span></h3>
+        <ol>
+          <li>In your repository, click <span class="ui">Settings</span>.</li>
+          <li>In the left menu, click <span class="ui">Pages</span>.</li>
+          <li>Under <b>Build and deployment</b>, set <b>Source</b> to <span class="ui">Deploy from a branch</span>.</li>
+          <li>Set the branch to <span class="ui">main</span> and the folder to <span class="ui">/ (root)</span>.</li>
+          <li>Click <span class="ui">Save</span>.</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="n">5</span>
+      <div>
+        <h3>Copy your links</h3>
+        <p>Wait a few minutes (it can take up to 10), refresh the Pages screen and click <span class="ui">Visit site</span>.</p>
+        <ul class="plain">
+          <li><b>Prototype link:</b> <code>https://your-username.github.io/your-repo-name/</code></li>
+          <li><b>Repo link:</b> <code>https://github.com/your-username/your-repo-name</code></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>🔧 Not a website? That's fine</h2>
+    <p>Any kind of prototype counts. Share a link to it, for example:</p>
+    <ul class="plain">
+      <li>A <b>Figma</b> or <b>Canva</b> mock-up that anyone with the link can view.</li>
+      <li>A <b>video</b> of your physical build (YouTube set to Unlisted, or Google Drive with link sharing on).</li>
+      <li>A <b>simulation</b> or <b>CAD model</b> share link, such as Tinkercad or Wokwi.</li>
+    </ul>
+    <p class="tip">You still need a GitHub repo: upload photos, sketches or project files, and describe your prototype in the README.</p>
+  </section>
+
+  <section class="card">
+    <h2>🖥️ Your slides link</h2>
+    <ul class="plain">
+      <li><b>Google Slides:</b> <span class="ui">Share</span>, set General access to <span class="ui">Anyone with the link</span> as Viewer, then <span class="ui">Copy link</span>.</li>
+      <li><b>Canva:</b> <span class="ui">Share</span>, allow anyone with the link to view, then copy the link.</li>
+    </ul>
+    <p class="tip">Links only. Do not send a PowerPoint or PDF file.</p>
+  </section>
+
+  <section class="card">
+    <h2>✅ Before you submit</h2>
+    <ul class="plain">
+      <li>Open all 3 links in a <b>private / incognito window</b>. If they open there, the judges can open them.</li>
+      <li>Never put passwords or API keys in your files. A public repo is visible to everyone.</li>
+    </ul>
+  </section>
+
+  <section class="card">
+    <h2>🆘 Something broke?</h2>
+    <details>
+      <summary>My website shows "404"</summary>
+      <p>Check that the file is called index.html (all lowercase), is not inside a folder, and that Pages is saved with the main branch. Then wait 10 minutes.</p>
+    </details>
+    <details>
+      <summary>I changed a file but the site looks the same</summary>
+      <p>Upload the new file again, wait a few minutes, then hard-refresh with Ctrl+Shift+R (Cmd+Shift+R on a Mac).</p>
+    </details>
+    <details>
+      <summary>I have no idea what is happening</summary>
+      <p>Take a screenshot or copy the error message, paste it into your AI tool and ask it to explain the fix step by step.</p>
+    </details>
+  </section>
+
+  <p class="center" style="margin-top:28px"><a class="btn alt" href="index.html">← Back to the countdown</a></p>
+</main>
+
+<footer class="footer">
+  <div class="wrap"><p class="muted small">Dumb-A-Thon 2026 · GitHub's buttons can change, so ask the organisers if something looks different.</p></div>
+</footer>
+
+<script>
+  document.getElementById('copy').addEventListener('click', async (e) => {
+    const btn = e.currentTarget;
+    const pre = document.getElementById('prompt');
+    try {
+      await navigator.clipboard.writeText(pre.textContent);
+      btn.textContent = '✓ Copied';
+    } catch {
+      const range = document.createRange();
+      range.selectNodeContents(pre);
+      getSelection().removeAllRanges();
+      getSelection().addRange(range);
+      btn.textContent = 'Selected. Press Ctrl+C';
+    }
+    setTimeout(() => { btn.textContent = '📋 Copy prompt'; }, 2500);
+  });
+</script>
+</body>
+</html>
