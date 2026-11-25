@@ -82,7 +82,6 @@
   <section class="card" id="timetable">
     <h2>📅 Timetable</h2>
     <ol class="tt" id="ttList"></ol>
-    <p class="muted small">All times are Malaysia time. It's <b id="clock">--:--:--</b> there now.</p>
   </section>
 
   <section class="card prizes" id="prizes">
@@ -112,7 +111,7 @@
   <button type="button" class="dbtn" id="simBannerReset">Back to real time</button>
 </div>
 
-<!-- 10-second topic drop countdown: full-screen, click to skip -->
+<!-- 10-second topic drop countdown: full-screen, cannot be skipped -->
 <div class="drop" id="drop" hidden data-mode="count" role="alert" aria-live="assertive">
   <div class="drop-inner">
     <p class="drop-label" id="dropLabel">TOPIC DROPS IN</p>
@@ -120,7 +119,6 @@
     <p class="drop-quip" id="dropQuip"></p>
   </div>
   <div class="confetti" id="confetti" aria-hidden="true"></div>
-  <p class="drop-skip">click anywhere to skip</p>
 </div>
 
 <!-- DEV PANEL: open with ?dev in the address, or Ctrl+Shift+D -->

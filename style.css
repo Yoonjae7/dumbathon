@@ -249,7 +249,7 @@ details[open] > summary::after { transform: rotate(45deg); }
 
 /* ---------- 10-second topic drop ---------- */
 .drop {
-  position: fixed; inset: 0; z-index: 200; display: grid; place-items: center; text-align: center; cursor: pointer; overflow: hidden;
+  position: fixed; inset: 0; z-index: 200; display: grid; place-items: center; text-align: center; overflow: hidden;
   background:
     repeating-linear-gradient(0deg, rgba(255, 255, 255, .04) 0 2px, transparent 2px 5px),
     radial-gradient(circle at 50% 45%, #2b1460 0%, #0b0b12 72%);
@@ -263,14 +263,14 @@ details[open] > summary::after { transform: rotate(45deg); }
   100% { transform: scale(1) rotate(0); }
 }
 .drop-quip { margin-top: 10px; font-size: clamp(14px, 2.6vw, 22px); color: var(--yellow); min-height: 1.6em; }
-.drop-skip { position: absolute; bottom: 18px; left: 0; right: 0; font-size: 12px; color: var(--muted); }
 .drop.final .drop-num { color: var(--red); text-shadow: 7px 0 var(--yellow), -7px 0 var(--pink); }
 .drop.final .drop-inner { animation: dshake .16s infinite; }
 @keyframes dshake { 0%, 100% { transform: translate(0, 0); } 25% { transform: translate(-5px, 3px); } 50% { transform: translate(5px, -3px); } 75% { transform: translate(-3px, -5px); } }
 .drop[data-mode=burst] .drop-num { font-family: var(--pix); font-size: clamp(2.6rem, 11vw, 7rem); color: var(--yellow); text-shadow: 6px 6px 0 var(--purple), -3px -3px 0 var(--pink); }
 
 /* ---------- dev panel + simulated-time banner ---------- */
-.dev { position: fixed; right: 12px; bottom: 12px; z-index: 90; width: min(272px, calc(100vw - 24px)); background: #0e0e12; border: 3px solid var(--yellow); border-radius: 6px; box-shadow: 4px 4px 0 #000; font-size: 12px; }
+/* above the drop overlay (200), so a paused simulation can't trap the organiser */
+.dev { position: fixed; right: 12px; bottom: 12px; z-index: 210; width: min(272px, calc(100vw - 24px)); background: #0e0e12; border: 3px solid var(--yellow); border-radius: 6px; box-shadow: 4px 4px 0 #000; font-size: 12px; }
 .dev-bar { display: flex; align-items: center; gap: 8px; background: var(--yellow); color: #1a0b24; padding: 4px 8px; font-family: var(--pix); font-weight: 700; }
 .dev-bar #devMode { flex: 1; font-family: var(--mono); font-weight: 400; font-size: 10.5px; }
 .dev-bar button { background: none; border: 0; font-size: 15px; cursor: pointer; color: #1a0b24; line-height: 1; }

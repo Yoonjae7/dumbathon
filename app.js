@@ -94,9 +94,7 @@
       name: 'Get ready', tag: 'Brain cells: loading…',
       tasks: [
         'Join the <b>WhatsApp group</b>. Announcements live there.',
-        'Find your team: <b>2 or 3 members</b>, no solo. Individuals get matched.',
-        'Charge your laptop and lower your standards.',
-      ],
+        'Find your team: <b>2 or 3 members</b>, no solo. Individuals get matched.',      ],
       extras: [],
     },
     post: { name: 'That\'s a wrap', tag: 'Thanks for being gloriously dumb with us.', tasks: [], extras: ['goose'] },
@@ -201,7 +199,6 @@
     return { d: Math.floor(s / 86400), h: Math.floor((s % 86400) / 3600), m: Math.floor((s % 3600) / 60), s: s % 60, totalH: Math.floor(s / 3600) };
   }
   const hms = (ms) => { const p = parts(ms); return `${p.totalH}h ${pad(p.m)}m ${pad(p.s)}s`; };
-  const mytClock = new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Kuala_Lumpur', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
   const mytFull = new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Kuala_Lumpur', weekday: 'short', day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
   const toInputValue = (ms) => new Date(ms + 8 * 3600e3).toISOString().slice(0, 19); // MYT wall clock for <input type=datetime-local>
   const quip = (list, t) => list[Math.floor(t / 15000) % list.length];
@@ -499,7 +496,7 @@
     10: 'Hands off the keyboard.', 9: 'Stretch your fingers.', 8: 'Drink some water.', 7: 'Hide your plans from the other teams.',
     6: 'Gilbert is watching.', 5: 'Lower your standards.', 4: 'Find your team. Fast.', 3: 'Brain cells: ready.', 2: 'Be confident.', 1: 'HONK.',
   };
-  let prevT = null, lastDropN = 0, dropDismissed = false, burstUntil = 0;
+  let prevT = null, lastDropN = 0, burstUntil = 0;
 
   function audio() {
     const AC = window.AudioContext || window.webkitAudioContext;
@@ -527,9 +524,9 @@
     // crossing zero by itself (a normal tick), not a jump from the dev panel
     const crossed = prevT !== null && prevT < first.start && t >= first.start && t - prevT < 5000;
     prevT = t;
-    if (toDrop > 10500) dropDismissed = false;
 
-    if (crossed && !dropDismissed) {
+    // there is deliberately no way to skip this: no click or key handler hides the overlay
+    if (crossed) {
       burstUntil = Date.now() + 3600;
       lastDropN = 0;
       el.dataset.mode = 'burst';
@@ -543,9 +540,9 @@
       el.hidden = false;
       return;
     }
-    if (Date.now() < burstUntil && !dropDismissed) return; // let the burst play out
+    if (Date.now() < burstUntil) return; // let the burst play out
 
-    if (toDrop > 0 && toDrop <= 10000 && !dropDismissed) {
+    if (toDrop > 0 && toDrop <= 10000) {
       const n = Math.ceil(toDrop / 1000);
       el.dataset.mode = 'count';
       if (n !== lastDropN) {
@@ -639,7 +636,6 @@
     updateLive(t, cur);
     updateTimetable(t);
     updateDrop(t);
-    $('clock').textContent = mytClock.format(new Date(t));
     if (sim) $('simBannerTime').textContent = mytFull.format(new Date(t));
     if (devOpen) $('devNow').textContent = mytFull.format(new Date(t));
     // fast clock needs faster redraws; real time ticks on the second boundary
@@ -692,7 +688,6 @@
       store.set(cb.dataset.key, cb.checked ? '1' : '0');
       updateProgress(cb.checked);
     });
-    $('drop').addEventListener('click', () => { dropDismissed = true; burstUntil = 0; $('drop').hidden = true; });
     // once the big countdown scrolls away, show the small one in the top bar
     if ('IntersectionObserver' in window) {
       new IntersectionObserver(([entry]) => {
