@@ -1,7 +1,7 @@
 /* The poster look: faint code text behind the page and the pink ticker on top. Shared by every page. */
 (() => {
   const TICKER = [
-    'FREE POOL RM700', 'NO SOLO TEAMS', 'DO NOT EXPLAIN THE JOKE', 'AI TOOLS ALLOWED',
+    'FREE POOL RM700', 'NO SOLO TEAMS', 'DO NOT EXPLAIN THE JOKE', 'AI TOOLS ENCOURAGED',
     'LAWS OF PHYSICS STILL APPLY', 'RESULTS BY EMAIL ONLY', 'BE CONFIDENTLY DUMB', 'GILBERT IS WATCHING',
   ];
   const CODE_LINES = [

@@ -9,11 +9,17 @@
   'use strict';
 
   /* ==================================================================
-     ORGANISERS: these three lines are the only ones you should need to edit.
-     TOPIC: paste it at the opening (30 Nov, 18:00). Never earlier, because anyone can view source.
+     ORGANISERS: this block is the only part you should need to edit.
+     TOPIC: optional headline for the drop. Empty = "The topic has dropped!".
+     BRIEF: the text shown under it once the countdown ends. It is hidden on the page before then,
+            but anyone who reads this file can see it.
      SUBMIT_*: paste a form link and a "Submit" button appears in that stage. Empty = no button.
      ================================================================== */
   const TOPIC = '';
+  const BRIEF = 'Imagine you are a Nottingham student who can start <b>any startup</b> or build <b>anything</b> for campus. '
+    + 'Come up with the <mark>funniest solution</mark> and present it with <mark>full confidence</mark>. '
+    + 'It can be anything and does not have to be realistic, but it has to be <b>creative</b> and <b>follow the laws of physics</b>. '
+    + 'Every idea must solve a <b>pain point</b>. AI tools are <b>strongly encouraged</b>.';
   const SUBMIT_PROPOSAL_URL = '';
   const SUBMIT_FINAL_URL = '';
 
@@ -28,12 +34,12 @@
       startLabel: 'Mon 30 Nov · 18:00', endLabel: 'Wed 2 Dec · 23:59',
       tasks: [
         'Read the <b>topic</b> above.',
-        'Pick your <b>dumbest (but smart) idea</b>. It must solve a real pain point and follow the laws of physics. AI tools are allowed.',
+        'Pick your <b>dumbest (but smart) idea</b>.',
         '<b>Confirm your idea</b> (Tue 1 Dec).',
         'Write your <b>proposal report</b> using the format below.',
         '<b>Submit it</b> by Wed 2 Dec, 23:59.',
       ],
-      extras: ['format', 'rule'],
+      extras: ['format'],
     },
     {
       id: 'shortlist', short: 'Shortlist', name: 'Shortlist', label: 'Shortlist announced in',
@@ -292,20 +298,23 @@
 
   /* ---------- topic card ---------- */
   const SCRAMBLE = 'ABCDEFGHJKLMNPQRSTUVWXYZ#$%&?!*+<>';
+  /* the separate card only shows the locked topic; once it drops, the topic moves into the to-do card */
   function renderTopic(phase) {
-    const card = $('topicCard');
-    card.hidden = phase === 'post';
-    if (phase === 'post') return;
     const locked = phase === 'pre';
-    card.className = `card topic ${locked ? 'locked' : 'open'}`;
+    $('topicCard').hidden = !locked;
     $('topicBody').innerHTML = locked
       ? `<p class="eyebrow">🔒 The topic</p>
          <p class="topic-text" id="scramble" aria-hidden="true">????? ????? ????</p>
          <p class="muted">It appears right here when the timer hits zero.</p>`
-      : `<p class="eyebrow">🔓 The topic</p>
-         <p class="topic-text">${TOPIC ? esc(TOPIC) : 'The topic has dropped!'}</p>
-         <p class="muted">${TOPIC ? 'Now go be gloriously dumb about it.' : 'It is being posted on this page. Refresh in a moment.'}</p>`;
+      : '';
   }
+  const droppedTopic = () => `
+    <div class="topic-open">
+      <img class="sticker" src="assets/blob-lollipop.png" alt="" width="110" height="112">
+      <p class="eyebrow">🔓 The topic</p>
+      <p class="topic-text">${TOPIC ? esc(TOPIC) : 'The topic has dropped!'}</p>
+      <p class="brief">${BRIEF}</p>
+    </div>`;
   function startScramble() {
     if (reducedMotion) return;
     setInterval(() => {
@@ -339,12 +348,6 @@
           ${submitButton(SUBMIT_PROPOSAL_URL, 'Submit proposal')}
         </div>
       </div>`,
-
-    rule: () => `
-      <details class="box">
-        <summary>🪿 The One Rule</summary>
-        <p class="reveal">Imagine you're a Nottingham student who can start <b>any startup</b> or build <b>anything</b> for campus. Come up with the <b>funniest solution</b> and present it with <b>full confidence</b>. It doesn't have to be realistic, but it has to be creative and follow the laws of physics. Every idea must solve a pain point. AI tools are allowed.</p>
-      </details>`,
 
     links: () => `
       <div class="box">
@@ -403,6 +406,7 @@
     $('todo').dataset.kind = st ? 'live' : phase;
     $('todo').innerHTML = `
       <div class="card">
+        ${st ? droppedTopic() : ''}
         <div class="card-head">
           <div>
             <p class="eyebrow">${eyebrow}</p>
