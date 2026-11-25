@@ -227,6 +227,7 @@ details[open] > summary::after { transform: rotate(45deg); }
 .teams { margin-top: 34px; text-align: center; box-shadow: 6px 6px 0 var(--teal); }
 .teams.won { border-color: var(--yellow); box-shadow: 6px 6px 0 var(--pink), 0 0 48px rgba(255, 210, 94, .28); }
 .congrats {
+  font-size: clamp(1.4rem, 5vw, 2rem);
   color: var(--yellow); text-shadow: 3px 3px 0 var(--purple);
   animation: congrats-in .9s cubic-bezier(.2, 1.6, .4, 1) both, wiggle 2.4s ease-in-out .9s infinite;
 }
@@ -234,6 +235,7 @@ details[open] > summary::after { transform: rotate(45deg); }
 @keyframes wiggle { 0%, 100% { transform: rotate(-1.2deg); } 50% { transform: rotate(1.2deg) scale(1.03); } }
 .pitch-note { margin-top: 20px; padding: 12px 14px; border: 3px solid var(--ink); border-radius: 6px; background: #3a2386; box-shadow: 4px 4px 0 var(--teal); font-size: 14px; }
 .pitch-note b { color: var(--yellow); }
+.team-example { margin-top: 14px; font-size: 12.5px; color: var(--muted); }
 .team-wait { margin-top: 18px; padding: 20px 14px; border: 2px dashed var(--yellow); border-radius: 6px; color: var(--yellow); }
 .team-list { list-style: none; margin: 20px 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px; text-align: left; }
 .team-list li { border: 3px solid var(--ink); border-radius: 6px; background: var(--panel2); box-shadow: 4px 4px 0 var(--pink); padding: 12px 14px; overflow-wrap: anywhere; animation: reveal .6s cubic-bezier(.2, 1.4, .4, 1) both; }

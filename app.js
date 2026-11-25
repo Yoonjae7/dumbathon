@@ -51,6 +51,7 @@
         'Sit tight. The presidents and vice presidents of the hosting societies are picking the top teams.',
         'The <b>top teams</b> are announced <b>right here on this page</b>, Thu 3 Dec at 18:00.',
         'Top teams build a prototype and <b>pitch their idea</b> on Pitch Night: <b>Tue 8 Dec, 17:00, F1A15</b>.',
+        'Each pitch is <b>5 minutes max</b>, followed by <b>5 minutes of Q&amp;A</b>.',
       ],
       extras: ['goose'],
     },
@@ -62,7 +63,7 @@
       tasks: [
         'Build your <b>prototype</b> with AI. <b>Any kind counts</b>. It does not have to be a website.',
         'Put your project in a <b>GitHub repo</b> and set it to Public.',
-        'Make your <b>pitch slides</b> and copy the <b>share link</b>.',
+        'Make your <b>pitch slides</b> for a talk of <b>5 minutes max</b> and copy the <b>share link</b>.',
         'Open all 3 links in a private window to check that they work.',
         '<b>Submit the 3 links</b> by Mon 7 Dec, 23:59.',
       ],
@@ -75,7 +76,7 @@
       startLabel: 'Mon 7 Dec · 23:59', endLabel: 'Tue 8 Dec · 17:00',
       tasks: [
         'Check that your <b>prototype link</b> and <b>slides link</b> still open.',
-        'Rehearse your pitch. <b>Confidence and delivery</b> matter.',
+        'Rehearse your pitch: <b>5 minutes max</b>, then get ready for <b>5 minutes of Q&amp;A</b>.',
         'Get to <b>F1A15</b> before 17:00 (backup rooms: F1A11, F3A08).',
         'Bring a laptop, plus your prototype if it is a physical one.',
       ],
@@ -88,7 +89,7 @@
       startLabel: 'Tue 8 Dec · 17:00', endLabel: 'Tue 8 Dec · 19:30',
       tasks: [
         'Register and take your seat at <b>F1A15</b>.',
-        'Pitch your idea and show your prototype. <b>Do not explain the joke.</b>',
+        'Pitch your idea and show your prototype: <b>5 minutes max</b>, then <b>5 minutes of Q&amp;A</b>. <b>Do not explain the joke.</b>',
         'Stay for the prizes.',
       ],
       extras: ['itinerary', 'judging'],
@@ -110,7 +111,7 @@
   const ITINERARY = [
     ['17:00', '17:15', 'Registration, welcome & opening'],
     ['17:15', '17:30', 'Introducing judges & shortlisted groups'],
-    ['17:30', '19:00', 'Idea pitching (judges grade live)'],
+    ['17:30', '19:00', 'Idea pitching: 5 min max + 5 min Q&amp;A per team (judges grade live)'],
     ['19:00', '19:15', 'Prize giving: GrabPay or ShopeePay vouchers'],
     ['19:15', '19:30', 'Event closing'],
   ].map(([s, e, what]) => ({ s: at(`2026-12-08T${s}:00`), e: at(`2026-12-08T${e}:00`), t: `${s} – ${e}`, what }));
@@ -479,10 +480,14 @@
   function updateTeams(t) {
     const shortlist = stageById('shortlist');
     const state = t < shortlist.start ? 'hidden' : t < shortlist.end ? 'locked' : t < last.end ? 'open' : 'done';
-    const teams = (Array.isArray(window.TOP_TEAMS) ? window.TOP_TEAMS : []).filter((team) => team && team.startup);
-    if (state === 'open' && !teams.length) pollTeams();
+    const valid = (list) => (Array.isArray(list) ? list : []).filter((team) => team && team.startup);
+    const real = valid(window.TOP_TEAMS);
+    // made-up teams are a preview only: they need a simulated clock, so the public never sees them
+    const example = !real.length && sim ? valid(window.EXAMPLE_TEAMS) : [];
+    const teams = real.length ? real : example;
+    if (state === 'open' && !real.length) pollTeams();
 
-    const signature = `${state}:${teams.length}`;
+    const signature = `${state}:${real.length}:${example.length}`;
     if (signature === teamsShown) return;
     teamsShown = signature;
 
@@ -491,16 +496,18 @@
     const revealed = (state === 'open' || state === 'done') && teams.length > 0;
     $('teams').classList.toggle('won', revealed);
     $('teamsTitle').className = revealed ? 'congrats' : '';
-    $('teamsTitle').textContent = revealed ? '🎉 Congratulations, top teams! 🎉' : '🏅 Top teams';
+    $('teamsTitle').textContent = revealed ? '🎉 Congratulations, top teams! 🎉' : '🏅 Top teams';
 
     const pitchDay = '<b>Tuesday 8 December, 17:00</b> at <b>F1A15</b>';
+    const format = '<br>Presentation: <b>5 minutes max</b>, then <b>5 minutes of Q&amp;A</b>.';
     let html = '';
     if (state === 'locked') {
       html = `<p class="team-wait">🔒 The top teams are revealed here on <b>${shortlist.endLabel}</b>.</p>
-        <p class="pitch-note">🎤 Top teams will <b>pitch their idea</b> on Pitch Night: ${pitchDay}.</p>`;
+        <p class="pitch-note">🎤 Top teams will <b>pitch their idea</b> on Pitch Night: ${pitchDay}.${format}</p>`;
     } else if (state !== 'hidden') {
       html = revealed
-        ? `<ul class="team-list">${teams.map((team, i) => `
+        ? `${example.length ? '<p class="team-example">👀 Example teams, shown only while previewing a simulated time.</p>' : ''}
+          <ul class="team-list">${teams.map((team, i) => `
             <li style="animation-delay:${(0.35 + i * 0.12).toFixed(2)}s">
               <b>${esc(team.startup)}</b>
               ${team.tagline ? `<em>"${esc(team.tagline)}"</em>` : ''}
@@ -508,7 +515,7 @@
             </li>`).join('')}</ul>`
         : '<p class="team-wait">🥁 Top teams: to be announced.</p>';
       if (state === 'open') {
-        html += `<p class="pitch-note">🎤 ${revealed ? 'You will be <b>pitching your idea</b>' : 'Top teams will be <b>pitching their idea</b>'} on Pitch Night: ${pitchDay}.</p>`;
+        html += `<p class="pitch-note">🎤 ${revealed ? 'You will be <b>pitching your idea</b>' : 'Top teams will be <b>pitching their idea</b>'} on Pitch Night: ${pitchDay}.${format}</p>`;
       }
     }
     $('teamList').innerHTML = html;
