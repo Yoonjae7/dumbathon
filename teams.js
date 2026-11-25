@@ -31,4 +31,6 @@ window.EXAMPLE_TEAMS = [
   { startup: "Queue Teleporter", tagline: "Stand in line without standing in line.", members: ["Daniel", "Hana", "Marcus"] },
   { startup: "Umbrella Drone", tagline: "Rain? Never heard of it.", members: ["Nadia", "Kelvin"] },
   { startup: "Snack Radar", tagline: "Finds free food before anyone else does.", members: ["Irfan", "Mei Ling", "Arjun"] },
+  { startup: "Seat Saver Bot", tagline: "Your library seat, defended by a very small robot.", members: ["Farah", "Wei Jie"] },
+  { startup: "Alarm Goose", tagline: "Honks until you give up and wake up.", members: ["Imran", "Lina", "Bryan"] },
 ];

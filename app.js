@@ -14,7 +14,9 @@
      BRIEF: the text shown under it once the countdown ends. It is hidden on the page before then,
             but anyone who reads this file can see it.
      SUBMIT_*: paste a form link and a "Submit" button appears in that stage. Empty = no button.
+     FINALISTS: how many teams make the final.
      ================================================================== */
+  const FINALISTS = 7;
   const TOPIC = '';
   const BRIEF = 'Imagine you are a Nottingham student who can start <b>any startup</b> or build <b>anything</b> for campus. '
     + 'Come up with the <mark>funniest and the most creative solution</mark> and present it with <mark>full confidence</mark>. '
@@ -37,7 +39,7 @@
         'Pick your <b>dumbest (but smart) idea</b>.',
         '<b>Confirm your idea</b> (Tue 1 Dec).',
         'Write your <b>proposal report</b> using the format below.',
-        '<b>Submit it</b> by Wed 2 Dec, 23:59.',
+        `<b>Submit it</b> by Wed 2 Dec, 23:59. Only <b>${FINALISTS} teams</b> make the final.`,
       ],
       extras: ['format'],
     },
@@ -48,9 +50,9 @@
       startLabel: 'Wed 2 Dec · 23:59', endLabel: 'Thu 3 Dec · 18:00',
       info: true, // nothing to do here: shown as plain notes, not tick boxes
       tasks: [
-        'Sit tight. The presidents and vice presidents of the hosting societies are picking the top teams.',
-        'The <b>top teams</b> are announced <b>right here on this page</b>, Thu 3 Dec at 18:00.',
-        'Top teams build a prototype and <b>pitch their idea</b> on Pitch Night: <b>Tue 8 Dec, 17:00, F1A15</b>.',
+        `Sit tight. The presidents and vice presidents of the hosting societies are picking <b>${FINALISTS} finalist teams</b>.`,
+        `The <b>${FINALISTS} finalists</b> are announced <b>right here on this page</b>, Thu 3 Dec at 18:00.`,
+        'Finalists build a prototype and <b>pitch their idea</b> on Pitch Night: <b>Tue 8 Dec, 17:00, F1A15</b>.',
         'Each pitch is <b>5 minutes max</b>, followed by <b>5 minutes of Q&amp;A</b>.',
       ],
       extras: ['goose'],
@@ -496,14 +498,14 @@
     const revealed = (state === 'open' || state === 'done') && teams.length > 0;
     $('teams').classList.toggle('won', revealed);
     $('teamsTitle').className = revealed ? 'congrats' : '';
-    $('teamsTitle').textContent = revealed ? '🎉 Congratulations, top teams! 🎉' : '🏅 Top teams';
+    $('teamsTitle').textContent = revealed ? '🎉 Congratulations, top teams! 🎉' : `🏅 Top ${FINALISTS} teams`;
 
     const pitchDay = '<b>Tuesday 8 December, 17:00</b> at <b>F1A15</b>';
     const format = '<br>Presentation: <b>5 minutes max</b>, then <b>5 minutes of Q&amp;A</b>.';
     let html = '';
     if (state === 'locked') {
-      html = `<p class="team-wait">🔒 The top teams are revealed here on <b>${shortlist.endLabel}</b>.</p>
-        <p class="pitch-note">🎤 Top teams will <b>pitch their idea</b> on Pitch Night: ${pitchDay}.${format}</p>`;
+      html = `<p class="team-wait">🔒 The <b>${FINALISTS} finalist teams</b> are revealed here on <b>${shortlist.endLabel}</b>.</p>
+        <p class="pitch-note">🎤 The ${FINALISTS} finalists will <b>pitch their idea</b> on Pitch Night: ${pitchDay}.${format}</p>`;
     } else if (state !== 'hidden') {
       html = revealed
         ? `${example.length ? '<p class="team-example">👀 Example teams, shown only while previewing a simulated time.</p>' : ''}
@@ -513,9 +515,9 @@
               ${team.tagline ? `<em>"${esc(team.tagline)}"</em>` : ''}
               ${team.members && team.members.length ? `<span>${team.members.map(esc).join(' · ')}</span>` : ''}
             </li>`).join('')}</ul>`
-        : '<p class="team-wait">🥁 Top teams: to be announced.</p>';
+        : `<p class="team-wait">🥁 ${FINALISTS} finalist teams: to be announced.</p>`;
       if (state === 'open') {
-        html += `<p class="pitch-note">🎤 ${revealed ? 'You will be <b>pitching your idea</b>' : 'Top teams will be <b>pitching their idea</b>'} on Pitch Night: ${pitchDay}.${format}</p>`;
+        html += `<p class="pitch-note">🎤 ${revealed ? 'You will be <b>pitching your idea</b>' : `The ${FINALISTS} finalists will be <b>pitching their idea</b>`} on Pitch Night: ${pitchDay}.${format}</p>`;
       }
     }
     $('teamList').innerHTML = html;
@@ -527,7 +529,7 @@
     { date: 'Mon 30 Nov', time: '18:00', what: 'Topic drops here. Brainstorming starts.', doneAt: first.start },
     { date: 'Tue 1 Dec', time: 'all day', what: 'Confirm your idea.', doneAt: at('2026-12-01T23:59:59') },
     { date: 'Wed 2 Dec', time: '23:59', what: 'Proposal report due.', doneAt: stageById('brainstorm').end },
-    { date: 'Thu 3 Dec', time: '18:00', what: 'Top teams announced here. Building starts.', doneAt: stageById('shortlist').end },
+    { date: 'Thu 3 Dec', time: '18:00', what: `Top ${FINALISTS} teams announced here. Building starts.`, doneAt: stageById('shortlist').end },
     { date: 'Mon 7 Dec', time: '23:59', what: 'GitHub, prototype and slides links due.', doneAt: stageById('build').end },
     { date: 'Tue 8 Dec', time: '17:00', what: 'Pitch night at F1A15, until 19:30.', startAt: stageById('pitch').start, doneAt: last.end },
   ];
