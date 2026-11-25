@@ -27,7 +27,7 @@
       deadline: 'Proposal report due', who: 'All teams',
       tasks: [
         'Read the <b>topic</b> on this page.',
-        'Pick your <b>dumbest (but smart) idea</b>. It must solve a real pain point. AI tools are allowed. F**k the laws of physics.',
+        'Pick your <b>dumbest (but smart) idea</b>. It must solve a real pain point. AI tools are allowed. Follow the laws of physics.',
         '<b>Confirm your idea</b> (Day 2, Tue 1 Dec).',
         'Write your <b>proposal report</b> (max 2 pages), in this order:',
         '<b>1. Startup name &amp; tagline</b>',
@@ -102,14 +102,14 @@
 
   const CRITERIA = [
     { name: 'Creative Absurdity', w: 30, d: 'How original, funny and gloriously dumb the idea is.' },
-    { name: 'Practicality', w: 20, d: 'Does it actually solve the pain point, and could it work in real life (physics optional)?' },
+    { name: 'Practicality', w: 20, d: 'Does it actually solve the pain point, and could it work in real life (within the laws of physics)?' },
     { name: 'Product Execution', w: 25, d: 'Does the prototype work, and are the GitHub repo and Vercel link live?' },
     { name: 'Presentation', w: 25, d: 'Confidence, delivery and quality of the slides.' },
   ];
 
   const TICKER = [
     'FREE POOL RM700', 'NO SOLO TEAMS', 'DO NOT EXPLAIN THE JOKE', 'AI TOOLS ALLOWED',
-    'FXXK LAWS OF PHYSICS', 'RESULTS BY EMAIL ONLY', 'BE CONFIDENTLY DUMB', 'GILBERT IS WATCHING',
+    'LAWS OF PHYSICS STILL APPLY', 'RESULTS BY EMAIL ONLY', 'BE CONFIDENTLY DUMB', 'GILBERT IS WATCHING',
   ];
 
   const CODE_LINES = [
@@ -283,13 +283,13 @@
         'Charge your laptop and lower your standards.',
         'The topic drops on <b>Mon 30 Nov at 18:00</b>. Not a second earlier.',
       ],
-      panels: ['topic', 'prizes'],
+      panels: ['topic'],
     },
     brainstorm: { panels: ['topic', 'rule', 'inspo'] },
     shortlist: { panels: ['goose'] },
     build: { panels: ['judging'] },
     prep: { panels: ['judging'] },
-    pitch: { panels: ['itinerary', 'judging', 'prizes'] },
+    pitch: { panels: ['itinerary', 'judging'] },
     post: { title: 'That\'s a wrap', tag: 'Brain cells: 0. Worth it.', tasks: [], panels: ['goose'] },
   };
 
@@ -311,7 +311,7 @@
     rule: () => `
       <div class="panel wide">
         <p class="eyebrow">The One Rule</p>
-        <p class="rule-text">Imagine you're a Nottingham student who can start <b>any startup</b> or build <b>anything</b> for campus. Come up with the <mark>funniest solution</mark> and present it with <mark>full confidence</mark>. It doesn't have to be realistic, but it has to be <b>creative</b>. <mark>F**k the laws of physics.</mark> Every idea must solve a <b>pain point</b>. AI tools are allowed.</p>
+        <p class="rule-text">Imagine you're a Nottingham student who can start <b>any startup</b> or build <b>anything</b> for campus. Come up with the <mark>funniest solution</mark> and present it with <mark>full confidence</mark>. It doesn't have to be realistic, but it has to be <b>creative</b> and <mark>follow the laws of physics</mark>. Every idea must solve a <b>pain point</b>. AI tools are allowed.</p>
       </div>`,
 
     inspo: () => `
@@ -332,17 +332,6 @@
       <div class="panel">
         <p class="eyebrow">How you'll be judged <small>(finals)</small></p>
         <div class="crit" id="criteria"></div>
-      </div>`,
-
-    prizes: () => `
-      <div class="panel">
-        <p class="eyebrow">Prize pool</p>
-        <div class="podium" aria-label="Prizes: 1st RM400, 2nd RM200, 3rd RM100">
-          <div class="pod p2"><span>2nd</span><b>RM200</b></div>
-          <div class="pod p1"><span>1st</span><b>RM400</b></div>
-          <div class="pod p3"><span>3rd</span><b>RM100</b></div>
-        </div>
-        <p class="total-prize">Total: <b>RM700</b>. One track, three places.</p>
       </div>`,
 
     itinerary: () => `
@@ -413,6 +402,32 @@
       const isNext = state === 'upcoming' && (cur.mode === 'pre' ? i === 0 : i === cur.i + 1);
       li.className = 'trk' + (state === 'live' ? ' live' : state === 'done' ? ' done' : isNext ? ' next' : '');
       li.querySelector('[data-k=st]').textContent = state === 'live' ? 'LIVE' : state === 'done' ? 'DONE ✓' : isNext ? 'NEXT' : 'LOCKED';
+    });
+  }
+
+  /* ---------- timetable: the whole flow, always visible (dates only, no tasks) ---------- */
+  const TIMETABLE = [
+    { date: 'Mon 30 Nov', time: '18:00', what: 'Opening. The topic drops on this page and brainstorming starts.', doneAt: first.start },
+    { date: 'Tue 1 Dec', time: 'all day', what: 'Confirm your idea.', doneAt: at('2026-12-01T23:59:59') },
+    { date: 'Wed 2 Dec', time: '23:59', what: 'Proposal report due.', doneAt: stageById('brainstorm').end },
+    { date: 'Thu 3 Dec', time: '18:00', what: 'Shortlist announced by email. Building starts.', doneAt: stageById('shortlist').end },
+    { date: 'Mon 7 Dec', time: '23:59', what: 'GitHub link, Vercel link and slides due.', doneAt: stageById('build').end },
+    { date: 'Tue 8 Dec', time: '17:00 – 19:30', what: 'Pitch night at F1A15: pitching, judging and prizes.', startAt: stageById('pitch').start, doneAt: last.end },
+  ];
+
+  function buildTimetable() {
+    $('ttList').innerHTML = TIMETABLE.map((r) => `
+      <li><time>${r.date}<span>${r.time}</span></time><p>${r.what}</p><em></em></li>`).join('');
+  }
+
+  function updateTimetable(t) {
+    const nextIndex = TIMETABLE.findIndex((r) => t < r.doneAt);
+    [...$('ttList').children].forEach((li, i) => {
+      const r = TIMETABLE[i];
+      const past = t >= r.doneAt;
+      const isNext = i === nextIndex;
+      li.className = past ? 'past' : isNext ? 'next' : '';
+      li.querySelector('em').textContent = past ? 'DONE ✓' : isNext ? (r.startAt && t >= r.startAt ? 'NOW' : 'NEXT') : '';
     });
   }
 
@@ -666,6 +681,7 @@
     updateTrack(t, cur);
     if (phase !== shownPhase) { shownPhase = phase; renderNow(phase); }
     updateNow(t, cur);
+    updateTimetable(t);
     updateDrop(t);
     if (sim) {
       $('simBannerTime').textContent = mytFull.format(new Date(t));
@@ -725,6 +741,7 @@
   $('drop').addEventListener('click', () => { dropDismissed = true; burstUntil = 0; $('drop').hidden = true; });
   buildBackdrop();
   buildTrack();
+  buildTimetable();
   wireHonk();
   wireDev();
   tick();

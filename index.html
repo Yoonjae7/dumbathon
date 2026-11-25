@@ -25,6 +25,10 @@
       <span class="dot"></span>
       <span class="mini-text" id="miniText">Loading brain cells…</span>
     </div>
+    <nav class="nav" aria-label="Sections">
+      <a href="#timetable">Timetable</a>
+      <a href="#prizes">Prizes</a>
+    </nav>
   </div>
 </header>
 
@@ -79,6 +83,28 @@
   <!-- RIGHT NOW: only what applies to the current stage is rendered here -->
   <section class="wrap" id="now" aria-live="polite">
     <div id="nowCard"></div>
+  </section>
+
+  <!-- TIMETABLE: the whole flow -->
+  <section class="wrap" id="timetable">
+    <h2 class="sec-title">📅 Timetable</h2>
+    <div class="card">
+      <ol class="tt" id="ttList"></ol>
+      <p class="tt-note">All times are Malaysia time (MYT).</p>
+    </div>
+  </section>
+
+  <!-- PRIZES -->
+  <section class="wrap" id="prizes">
+    <h2 class="sec-title">🏆 Prizes</h2>
+    <div class="card prize-card">
+      <div class="podium" role="img" aria-label="Prizes: 1st RM400, 2nd RM200, 3rd RM100">
+        <div class="pod p2"><span>2nd</span><b>RM200</b></div>
+        <div class="pod p1"><span>1st</span><b>RM400</b></div>
+        <div class="pod p3"><span>3rd</span><b>RM100</b></div>
+      </div>
+      <p class="total-prize">Total prize pool: <b>RM700</b>. One track, three places.</p>
+    </div>
   </section>
 </main>
 
