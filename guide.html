@@ -5,14 +5,17 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>GitHub Guide | Dumb-A-Thon</title>
 <meta name="description" content="No coding needed: how to put your Dumb-A-Thon project on GitHub, get a prototype link and share your slides.">
-<meta name="theme-color" content="#101014">
+<meta name="theme-color" content="#121215">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%AA%BF%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800&family=Pixelify+Sans:wght@400..700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body class="guide">
+
+<div class="code-bg" id="codeBg" aria-hidden="true"></div>
+<div class="ticker" aria-hidden="true"><div class="ticker-track" id="tickerTrack"></div></div>
 
 <header class="topbar">
   <div class="bar-inner">
@@ -157,13 +160,14 @@ Then tell me, step by step, how to test it.</pre>
     </details>
   </section>
 
-  <p class="center" style="margin-top:28px"><a class="btn alt" href="index.html">← Back to the countdown</a></p>
+  <p class="center"><a class="btn alt" href="index.html">← Back to the countdown</a></p>
 </main>
 
 <footer class="footer">
   <div class="wrap"><p class="muted small">Dumb-A-Thon 2026 · GitHub's buttons can change, so ask the organisers if something looks different.</p></div>
 </footer>
 
+<script src="decor.js"></script>
 <script>
   document.getElementById('copy').addEventListener('click', async (e) => {
     const btn = e.currentTarget;

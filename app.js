@@ -62,7 +62,7 @@
       extras: ['links', 'judging'],
     },
     {
-      id: 'prep', short: 'Prep', name: 'Pitch Prep', label: 'Pitch night starts in',
+      id: 'prep', short: 'Pitch prep', name: 'Pitch Prep', label: 'Pitch night starts in',
       tag: 'Submissions are closed. Practise your straight face.', who: 'Shortlisted teams',
       start: at('2026-12-07T23:59:59'), end: at('2026-12-08T17:00:00'),
       startLabel: 'Mon 7 Dec · 23:59', endLabel: 'Tue 8 Dec · 17:00',
@@ -75,7 +75,7 @@
       extras: ['judging'],
     },
     {
-      id: 'pitch', short: 'Pitch', name: 'Pitch Night', label: 'Event closes in',
+      id: 'pitch', short: 'Pitch night', name: 'Pitch Night', label: 'Event closes in',
       tag: 'Say it with full confidence.', who: 'Shortlisted teams',
       start: at('2026-12-08T17:00:00'), end: at('2026-12-08T19:30:00'),
       startLabel: 'Tue 8 Dec · 17:00', endLabel: 'Tue 8 Dec · 19:30',
@@ -222,16 +222,17 @@
   }
 
   function updateHero(t, cur) {
-    let rem = 0, pct = 0, level = 'calm', pill, label, when;
+    let rem = 0, pct = 0, level = 'calm', stepText, label, when;
+    const badge = { pre: ['PRE-GAME', 'idle'], live: ['LIVE NOW', 'live'], post: ['FINISHED', 'done'] }[cur.mode];
 
     if (cur.mode === 'pre') {
       rem = first.start - t;
-      pill = 'Not started yet';
+      stepText = 'Not started yet';
       label = 'Topic drops in';
-      when = `<b>${first.startLabel}</b>, Malaysia time`;
+      when = `${first.startLabel}, Malaysia time`;
       level = 'pre';
     } else if (cur.mode === 'post') {
-      pill = 'Finished';
+      stepText = 'All stages complete';
       label = 'That\'s a wrap. Go touch grass.';
       when = 'Dumb-A-Thon 2026 · 30 Nov to 8 Dec';
       level = 'post';
@@ -239,9 +240,9 @@
       const s = cur.stage;
       rem = s.end - t;
       pct = ((t - s.start) / (s.end - s.start)) * 100;
-      pill = `Stage ${cur.i + 1} of ${STAGES.length} · ${s.name}`;
+      stepText = `Stage ${cur.i + 1} of ${STAGES.length} · ${s.name}`;
       label = s.label;
-      when = `<b>${s.endLabel}</b>, Malaysia time`;
+      when = `${s.endLabel}, Malaysia time`;
       if (s.id === 'shortlist') level = 'wait';
       else if (s.id === 'prep') level = 'prep';
       else if (s.id === 'pitch') level = 'live';
@@ -253,9 +254,12 @@
     hero.classList.toggle('panic', level === 'panic');
     hero.classList.toggle('warn', level === 'urgent' || level === 'day');
 
-    $('pillText').textContent = pill;
+    $('badge').textContent = badge[0];
+    $('badge').className = `badge ${badge[1]}`;
+    $('stepText').textContent = stepText;
+    $('winTitle').textContent = level === 'panic' ? 'countdown.exe (Not Responding)' : 'countdown.exe';
     $('countLabel').textContent = label;
-    if ($('when').dataset.v !== when) { $('when').innerHTML = when; $('when').dataset.v = when; }
+    $('when').textContent = when;
     $('timer').hidden = cur.mode === 'post';
     const p = parts(rem);
     setDigit('dD', pad(p.d));
@@ -272,15 +276,20 @@
     document.title = cur.mode === 'post' ? 'Dumb-A-Thon 2026' : `${level === 'panic' ? '🚨' : '⏳'} ${hms(rem)} · Dumb-A-Thon`;
   }
 
-  /* ---------- 5-dot stage stepper ---------- */
+  /* ---------- timeline strip: five stage tiles ---------- */
   function buildSteps() {
-    $('steps').innerHTML = STAGES.map((s) => `<li data-id="${s.id}"><i></i>${s.short}</li>`).join('');
+    $('steps').innerHTML = STAGES.map((s, i) => `
+      <li class="trk" data-id="${s.id}">
+        <span class="n">${i + 1}</span><b>${s.short}</b><small>${s.startLabel}</small><em></em>
+      </li>`).join('');
   }
-  function updateSteps(t) {
-    STAGES.forEach((s) => {
+  function updateSteps(t, cur) {
+    STAGES.forEach((s, i) => {
       const li = $('steps').querySelector(`[data-id="${s.id}"]`);
-      const state = t >= s.end ? 'done' : t >= s.start ? 'live' : '';
-      if (li.className !== state) li.className = state;
+      const isNext = t < s.start && (cur.mode === 'pre' ? i === 0 : i === cur.i + 1);
+      const state = t >= s.end ? 'done' : t >= s.start ? 'live' : isNext ? 'next' : '';
+      li.className = `trk ${state}`;
+      li.querySelector('em').textContent = { done: 'DONE ✓', live: 'LIVE', next: 'NEXT', '': 'LOCKED' }[state];
     });
   }
 
@@ -394,13 +403,14 @@
       return `<li><label><input type="checkbox" data-key="${key}" ${store.get(key) === '1' ? 'checked' : ''}><span>${t}</span></label></li>`;
     }).join('');
 
+    $('todo').dataset.kind = st ? 'live' : phase;
     $('todo').innerHTML = `
       <div class="card">
         <div class="card-head">
           <div>
             <p class="eyebrow">${eyebrow}</p>
             <h2>${P.name}</h2>
-            <p class="muted">${P.tag}</p>
+            <p class="stage-tag">${P.tag}</p>
           </div>
           ${tasks ? '<div class="progress"><b id="doneCount"></b><div class="meter"><i id="doneFill"></i></div></div>' : ''}
         </div>
@@ -624,7 +634,7 @@
     const cur = currentStage(t);
     const phase = cur.mode === 'live' ? cur.stage.id : cur.mode;
     updateHero(t, cur);
-    updateSteps(t);
+    updateSteps(t, cur);
     if (phase !== shownPhase) { shownPhase = phase; renderTopic(phase); renderTodo(phase); }
     updateLive(t, cur);
     updateTimetable(t);
