@@ -15,8 +15,11 @@
             but anyone who reads this file can see it.
      SUBMIT_*: paste a form link and a "Submit" button appears in that stage. Empty = no button.
      FINALISTS: how many teams make the final.
+     PITCH_MINUTES / QA_MINUTES: time limit per team on pitch night.
      ================================================================== */
   const FINALISTS = 7;
+  const PITCH_MINUTES = 5;
+  const QA_MINUTES = 3;
   const TOPIC = '';
   const BRIEF = 'Imagine you are a Nottingham student who can start <b>any startup</b> or build <b>anything</b> for campus. '
     + 'Come up with the <mark>funniest and the most creative solution</mark> and present it with <mark>full confidence</mark>. '
@@ -52,8 +55,8 @@
       tasks: [
         `Sit tight. The presidents and vice presidents of the hosting societies are picking <b>${FINALISTS} finalist teams</b>.`,
         `The <b>${FINALISTS} finalists</b> are announced <b>right here on this page</b>, Thu 3 Dec at 18:00.`,
-        'Finalists build a prototype and <b>pitch their idea</b> on Pitch Night: <b>Tue 8 Dec, 17:00, F1A15</b>.',
-        'Each pitch is <b>5 minutes max</b>, followed by <b>5 minutes of Q&amp;A</b>.',
+        'Finalists build a prototype and <b>pitch their idea</b> on Pitch Night: <b>Tue 8 Dec at F1A15</b>, registration from 17:00.',
+        `Each pitch is <b>${PITCH_MINUTES} minutes max</b>, followed by <b>${QA_MINUTES} minutes of Q&amp;A</b>.`,
       ],
       extras: ['goose'],
     },
@@ -65,11 +68,11 @@
       tasks: [
         'Build your <b>prototype</b> with AI. <b>Any kind counts</b>. It does not have to be a website.',
         'Put your project in a <b>GitHub repo</b> and set it to Public.',
-        'Make your <b>pitch slides</b> for a talk of <b>5 minutes max</b> and copy the <b>share link</b>.',
+        `Make your <b>pitch slides</b> for a talk of <b>${PITCH_MINUTES} minutes max</b> and copy the <b>share link</b>.`,
         'Open all 3 links in a private window to check that they work.',
         '<b>Submit the 3 links</b> by Mon 7 Dec, 23:59.',
       ],
-      extras: ['links', 'judging'],
+      extras: ['links', 'pitchRule', 'judging'],
     },
     {
       id: 'prep', short: 'Pitch prep', name: 'Pitch Prep', label: 'Pitch night starts in',
@@ -78,11 +81,11 @@
       startLabel: 'Mon 7 Dec · 23:59', endLabel: 'Tue 8 Dec · 17:00',
       tasks: [
         'Check that your <b>prototype link</b> and <b>slides link</b> still open.',
-        'Rehearse your pitch: <b>5 minutes max</b>, then get ready for <b>5 minutes of Q&amp;A</b>.',
-        'Get to <b>F1A15</b> before 17:00 (backup rooms: F1A11, F3A08).',
+        `Rehearse your pitch: <b>${PITCH_MINUTES} minutes max</b>, then get ready for <b>${QA_MINUTES} minutes of Q&amp;A</b>.`,
+        'Get to <b>F1A15</b> for registration, <b>17:00 to 17:15</b> (backup rooms: F1A11, F3A08).',
         'Bring a laptop, plus your prototype if it is a physical one.',
       ],
-      extras: ['judging'],
+      extras: ['pitchRule', 'judging'],
     },
     {
       id: 'pitch', short: 'Pitch night', name: 'Pitch Night', label: 'Event closes in',
@@ -90,8 +93,8 @@
       start: at('2026-12-08T17:00:00'), end: at('2026-12-08T19:30:00'),
       startLabel: 'Tue 8 Dec · 17:00', endLabel: 'Tue 8 Dec · 19:30',
       tasks: [
-        'Register and take your seat at <b>F1A15</b>.',
-        'Pitch your idea and show your prototype: <b>5 minutes max</b>, then <b>5 minutes of Q&amp;A</b>. <b>Do not explain the joke.</b>',
+        'Register at <b>F1A15</b> between <b>17:00 and 17:15</b>.',
+        `Pitch your idea and show your prototype: <b>${PITCH_MINUTES} minutes max</b>, then <b>${QA_MINUTES} minutes of Q&amp;A</b>. <b>Do not explain the joke.</b>`,
         'Stay for the prizes.',
       ],
       extras: ['itinerary', 'judging'],
@@ -110,13 +113,20 @@
     post: { name: 'That\'s a wrap', tag: 'Thanks for being gloriously dumb with us.', tasks: [], extras: ['goose'] },
   };
 
+  /* pitch day: start, end, name, extra detail for the run sheet */
   const ITINERARY = [
-    ['17:00', '17:15', 'Registration, welcome & opening'],
-    ['17:15', '17:30', 'Introducing judges & shortlisted groups'],
-    ['17:30', '19:00', 'Idea pitching: 5 min max + 5 min Q&amp;A per team (judges grade live)'],
-    ['19:00', '19:15', 'Prize giving: GrabPay or ShopeePay vouchers'],
-    ['19:15', '19:30', 'Event closing'],
-  ].map(([s, e, what]) => ({ s: at(`2026-12-08T${s}:00`), e: at(`2026-12-08T${e}:00`), t: `${s} – ${e}`, what }));
+    ['17:00', '17:15', 'Registration'],
+    ['17:15', '17:30', 'Opening'],
+    ['17:30', '19:00', 'Final pitching session'],
+    ['19:00', '19:15', 'Prize giving', 'GrabPay or ShopeePay vouchers'],
+    ['19:15', '19:30', 'Closing'],
+  ].map(([s, e, name, detail]) => ({
+    s: at(`2026-12-08T${s}:00`), e: at(`2026-12-08T${e}:00`), t: `${s} – ${e}`,
+    what: detail ? `${name}: ${detail}` : name,
+  }));
+
+  /* the time limit, as one loud box wherever finalists need it */
+  const pitchRule = () => `<p class="pitch-rule">⏱️ Each team: <b>${PITCH_MINUTES} min presentation (max)</b> + <b>${QA_MINUTES} min Q&amp;A</b></p>`;
 
   const CRITERIA = [
     { name: 'Creative Absurdity', w: 30, d: 'How original, funny and gloriously dumb the idea is.' },
@@ -334,6 +344,8 @@
   const submitButton = (url, text) => (url ? `<a class="btn alt" href="${esc(url)}" target="_blank" rel="noopener">${text} →</a>` : '');
 
   const EXTRAS = {
+    pitchRule,
+
     format: () => `
       <div class="box">
         <h3>📝 Proposal format</h3>
@@ -385,6 +397,7 @@
       <div class="box">
         <h3>🎤 Run sheet</h3>
         <p class="muted small">Venue: F1A15</p>
+        ${pitchRule()}
         <ol class="itin">
           ${ITINERARY.map((it, j) => `<li data-it="${j}"><time>${it.t}</time><span>${it.what}</span></li>`).join('')}
         </ol>
@@ -500,8 +513,8 @@
     $('teamsTitle').className = revealed ? 'congrats' : '';
     $('teamsTitle').textContent = revealed ? '🎉 Congratulations, top teams! 🎉' : `🏅 Top ${FINALISTS} teams`;
 
-    const pitchDay = '<b>Tuesday 8 December, 17:00</b> at <b>F1A15</b>';
-    const format = '<br>Presentation: <b>5 minutes max</b>, then <b>5 minutes of Q&amp;A</b>.';
+    const pitchDay = '<b>Tuesday 8 December</b> at <b>F1A15</b> (registration 17:00, pitching 17:30)';
+    const format = `<br>Presentation: <b>${PITCH_MINUTES} minutes max</b>, then <b>${QA_MINUTES} minutes of Q&amp;A</b>.`;
     let html = '';
     if (state === 'locked') {
       html = `<p class="team-wait">🔒 The <b>${FINALISTS} finalist teams</b> are revealed here on <b>${shortlist.endLabel}</b>.</p>
@@ -531,12 +544,14 @@
     { date: 'Wed 2 Dec', time: '23:59', what: 'Proposal report due.', doneAt: stageById('brainstorm').end },
     { date: 'Thu 3 Dec', time: '18:00', what: `Top ${FINALISTS} teams announced here. Building starts.`, doneAt: stageById('shortlist').end },
     { date: 'Mon 7 Dec', time: '23:59', what: 'GitHub, prototype and slides links due.', doneAt: stageById('build').end },
-    { date: 'Tue 8 Dec', time: '17:00', what: 'Pitch night at F1A15, until 19:30.', startAt: stageById('pitch').start, doneAt: last.end },
+    { date: 'Tue 8 Dec', time: '17:00', what: 'Pitch night at F1A15, until 19:30.', plan: ITINERARY, startAt: stageById('pitch').start, doneAt: last.end },
   ];
 
   function buildTimetable() {
     $('ttList').innerHTML = TIMETABLE.map((r) => `
-      <li><i></i><time>${r.date}<small>${r.time}</small></time><div><p>${r.what}</p><em></em></div></li>`).join('');
+      <li><i></i><time>${r.date}<small>${r.time}</small></time><div><p>${r.what}</p><em></em>
+        ${r.plan ? `${pitchRule()}<div class="tt-plan">${r.plan.map((it) => `<div><span>${it.t}</span>${it.what}</div>`).join('')}</div>` : ''}
+      </div></li>`).join('');
   }
 
   function updateTimetable(t) {

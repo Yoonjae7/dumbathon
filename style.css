@@ -210,7 +210,10 @@ details[open] > summary::after { transform: rotate(45deg); }
 
 /* timetable */
 .tt { list-style: none; margin: 18px 0 14px; padding: 0; display: grid; gap: 10px; }
-.tt li { display: grid; grid-template-columns: 120px 1fr; gap: 14px; align-items: center; padding: 10px 14px; border: 2px solid #3a3a4a; border-radius: 6px; background: var(--panel2); }
+.tt li { display: grid; grid-template-columns: 120px 1fr; gap: 14px; align-items: start; padding: 10px 14px; border: 2px solid #3a3a4a; border-radius: 6px; background: var(--panel2); }
+.tt-plan { display: grid; gap: 4px; margin-top: 10px; padding-top: 10px; border-top: 2px dashed #3a3a4a; font-size: 12.5px; }
+.tt-plan div { display: grid; grid-template-columns: 112px 1fr; gap: 10px; }
+.tt-plan span { color: var(--yellow); font-variant-numeric: tabular-nums; }
 .tt i { display: none; }
 .tt time { font-weight: 700; font-size: 13.5px; color: var(--yellow); line-height: 1.45; }
 .tt time small { display: block; font-weight: 400; font-size: 12.5px; color: var(--muted); }
@@ -236,6 +239,10 @@ details[open] > summary::after { transform: rotate(45deg); }
 .pitch-note { margin-top: 20px; padding: 12px 14px; border: 3px solid var(--ink); border-radius: 6px; background: #3a2386; box-shadow: 4px 4px 0 var(--teal); font-size: 14px; }
 .pitch-note b { color: var(--yellow); }
 .team-example { margin-top: 14px; font-size: 12.5px; color: var(--muted); }
+/* pitch time limit: deliberately loud */
+.pitch-rule { margin-top: 18px; padding: 11px 14px; border: 3px solid var(--ink); border-radius: 6px; background: var(--yellow); color: #1a0b24; box-shadow: 4px 4px 0 var(--purple); text-align: center; font-size: 14px; }
+.pitch-rule b { white-space: nowrap; }
+.tt .pitch-rule { margin-top: 10px; font-size: 13px; }
 .team-wait { margin-top: 18px; padding: 20px 14px; border: 2px dashed var(--yellow); border-radius: 6px; color: var(--yellow); }
 .team-list { list-style: none; margin: 20px 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px; text-align: left; }
 .team-list li { border: 3px solid var(--ink); border-radius: 6px; background: var(--panel2); box-shadow: 4px 4px 0 var(--pink); padding: 12px 14px; overflow-wrap: anywhere; animation: reveal .6s cubic-bezier(.2, 1.4, .4, 1) both; }
