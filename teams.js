@@ -33,4 +33,7 @@ window.EXAMPLE_TEAMS = [
   { startup: "Snack Radar", tagline: "Finds free food before anyone else does.", members: ["Irfan", "Mei Ling", "Arjun"] },
   { startup: "Seat Saver Bot", tagline: "Your library seat, defended by a very small robot.", members: ["Farah", "Wei Jie"] },
   { startup: "Alarm Goose", tagline: "Honks until you give up and wake up.", members: ["Imran", "Lina", "Bryan"] },
+  { startup: "Lift Whisperer", tagline: "Calls the lift before you even miss it.", members: ["Aisyah", "Dev"] },
+  { startup: "Deadline Snooze", tagline: "Moves your deadline. Emotionally, not actually.", members: ["Yusuf", "Elena"] },
+  { startup: "Duck Courier", tagline: "Delivers notes across the lake, eventually.", members: ["Kavya", "Amir", "Ben"] },
 ];

@@ -17,7 +17,7 @@
      FINALISTS: how many teams make the final.
      PITCH_MINUTES / QA_MINUTES: time limit per team on pitch night.
      ================================================================== */
-  const FINALISTS = 7;
+  const FINALISTS = 10;
   const PITCH_MINUTES = 5;
   const QA_MINUTES = 3;
   const TOPIC = '';
@@ -434,8 +434,10 @@
           </div>
           ${tickable ? '<div class="progress"><b id="doneCount"></b><div class="meter"><i id="doneFill"></i></div></div>' : ''}
         </div>
-        ${tasks ? `<ul class="${tickable ? 'tasks' : 'notes'}">${tasks}</ul>` : ''}
-        ${P.extras.map((k) => EXTRAS[k]()).join('')}
+        <div class="todo-body ${tasks && P.extras.length ? 'split' : ''}">
+          ${tasks ? `<ul class="${tickable ? 'tasks' : 'notes'}">${tasks}</ul>` : ''}
+          ${P.extras.length ? `<div class="extras">${P.extras.map((k) => EXTRAS[k]()).join('')}</div>` : ''}
+        </div>
         <p class="upnext" id="upNext" hidden></p>
       </div>`;
     updateProgress();
